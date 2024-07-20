@@ -1,0 +1,3 @@
+[submodule "rose-gold"]
+	path = rose-gold
+	url = https://github.com/StripeRose/rose-gold.git
