@@ -1,5 +1,4 @@
 // Filter "Chart/Rendering"
-#include "stdafx.hpp"
 #include "ChartRenderer.hpp"
 
 #include "ChartData.hpp"

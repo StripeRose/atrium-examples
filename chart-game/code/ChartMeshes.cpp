@@ -1,5 +1,4 @@
 // Filter "Chart/Rendering"
-#include "stdafx.hpp"
 #include "ChartMeshes.hpp"
 
 std::unique_ptr<Mesh> CreateFretboardMesh(RoseGold::Core::GraphicsAPI& aGraphicsAPI)

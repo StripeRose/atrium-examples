@@ -1,5 +1,4 @@
 // Filter "Chart"
-#include "stdafx.hpp"
 #include "ChartTestWindow.hpp"
 #include "ChartData.hpp"
 #include "ChartTrack.hpp"

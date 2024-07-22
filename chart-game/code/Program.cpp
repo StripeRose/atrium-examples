@@ -1,5 +1,3 @@
-#include "stdafx.hpp"
-
 #include "ExampleGame.hpp"
 
 #include <Engine_Instance.hpp>

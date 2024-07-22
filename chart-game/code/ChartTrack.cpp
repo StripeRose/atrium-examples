@@ -1,5 +1,4 @@
 // Filter "Chart"
-#include "stdafx.hpp"
 #include "ChartTrack.hpp"
 
 #include "MidiDecoder.hpp"

@@ -1,5 +1,4 @@
 // Filter "Chart/Playback"
-#include "stdafx.hpp"
 #include "ChartController.hpp"
 
 #include "ChartData.hpp"
