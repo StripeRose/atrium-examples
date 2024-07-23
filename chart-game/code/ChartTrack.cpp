@@ -49,7 +49,7 @@ std::unique_ptr<ChartTrack> ChartTrack::CreateTrackByName(const std::string& aNa
 	}
 	else
 	{
-		RoseGold::Debug::LogError("Unknown track type: %s", aName.c_str());
+		Atrium::Debug::LogError("Unknown track type: %s", aName.c_str());
 	}
 
 	return track;
@@ -67,8 +67,8 @@ const ChartNoteRange* ChartGuitarTrack::GetClosestNote(ChartTrackDifficulty aDif
 		if (noteRange.Lane != aLane)
 			continue;
 
-		const std::chrono::microseconds distanceToStart = RoseGold::Math::Abs(noteRange.Start - aTimepoint);
-		const std::chrono::microseconds distanceToEnd = RoseGold::Math::Abs(noteRange.End - aTimepoint);
+		const std::chrono::microseconds distanceToStart = Atrium::Math::Abs(noteRange.Start - aTimepoint);
+		const std::chrono::microseconds distanceToEnd = Atrium::Math::Abs(noteRange.End - aTimepoint);
 
 		if (distanceToStart < distance)
 		{
@@ -270,7 +270,7 @@ bool ChartGuitarTrack::Load_ProcessSysEx(const ChartTrackLoadData& someData)
 			dataInHex += ' ';
 		}
 
-		RoseGold::Debug::Log("Unknown SysEx event - % s", dataInHex.c_str());
+		Atrium::Debug::Log("Unknown SysEx event - % s", dataInHex.c_str());
 	}
 
 	return true;
@@ -344,7 +344,7 @@ bool ChartGuitarTrack::Load_ProcessMarkers(const ChartTrackLoadData& someData)
 			case 127: marker.Marker = Marker::TrillLane; break;
 
 			default:
-				RoseGold::Debug::LogWarning("Unknown marker note %s (%u)", MidiDecoder::NoteNumberToString(midiNote).c_str(), midiNote);
+				Atrium::Debug::LogWarning("Unknown marker note %s (%u)", MidiDecoder::NoteNumberToString(midiNote).c_str(), midiNote);
 				break;
 			}
 		}

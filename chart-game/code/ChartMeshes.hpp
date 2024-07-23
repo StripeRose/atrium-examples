@@ -11,30 +11,30 @@ static constexpr float FretboardLength = 1.9212f;
 
 struct ChartFretboardVertex
 {
-	static std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
+	static std::vector<Atrium::Core::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
 
 	float Position[3];
 	float UV[2];
 };
 using ChartFretboardMesh = MeshT<ChartFretboardVertex>;
 
-std::unique_ptr<Mesh> CreateFretboardMesh(RoseGold::Core::GraphicsAPI& aGraphicsAPI);
+std::unique_ptr<Mesh> CreateFretboardMesh(Atrium::Core::GraphicsAPI& aGraphicsAPI);
 
 struct ChartQuadVertex
 {
-	static std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
+	static std::vector<Atrium::Core::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
 
 	float Position[3];
 };
 
 struct ChartQuadInstance
 {
-	RoseGold::Math::Matrix Transform;
-	RoseGold::Math::Vector2 UVMin;
-	RoseGold::Math::Vector2 UVMax;
+	Atrium::Math::Matrix Transform;
+	Atrium::Math::Vector2 UVMin;
+	Atrium::Math::Vector2 UVMax;
 	float Color[4];
 };
 
 using ChartQuadMesh = MeshT<ChartQuadVertex>;
 
-std::unique_ptr<Mesh> CreateQuadMesh(RoseGold::Core::GraphicsAPI& aGraphicsAPI);
+std::unique_ptr<Mesh> CreateQuadMesh(Atrium::Core::GraphicsAPI& aGraphicsAPI);

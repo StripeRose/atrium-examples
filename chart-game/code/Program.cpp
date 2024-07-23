@@ -10,7 +10,7 @@ int main(int, const char**)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 #endif
 {
-	if (std::unique_ptr<RoseGold::EngineInstance> engineInstance = RoseGold::EngineInstance::Create())
+	if (std::unique_ptr<Atrium::EngineInstance> engineInstance = Atrium::EngineInstance::Create())
 	{
 		ExampleGame game(*engineInstance);
 		engineInstance->Run();

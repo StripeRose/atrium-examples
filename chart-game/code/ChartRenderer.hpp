@@ -17,40 +17,40 @@ class ChartRenderer
 public:
 	ChartRenderer(ChartPlayer& aPlayer);
 
-	void SetupResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, RoseGold::Core::GraphicsFormat aColorTargetFormat);
+	void SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atrium::Core::GraphicsFormat aColorTargetFormat);
 
-	void Render(RoseGold::Core::FrameContext& aContext, const std::shared_ptr<RoseGold::Core::RenderTexture>& aTarget);
+	void Render(Atrium::Core::FrameContext& aContext, const std::shared_ptr<Atrium::Core::RenderTexture>& aTarget);
 
 private:
-	void SetupQuadResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<RoseGold::Core::RootSignature>& aRootSignature, RoseGold::Core::GraphicsFormat aColorTargetFormat);
-	void SetupFretboardResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<RoseGold::Core::RootSignature>& aRootSignature, RoseGold::Core::GraphicsFormat aColorTargetFormat);
+	void SetupQuadResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature, Atrium::Core::GraphicsFormat aColorTargetFormat);
+	void SetupFretboardResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature, Atrium::Core::GraphicsFormat aColorTargetFormat);
 
-	std::pair<int, int> GetControllerRectanglesGrid(RoseGold::Math::Rectangle aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const;
-	std::vector<RoseGold::Math::Rectangle> GetControllerRectangles(RoseGold::Math::Rectangle aTotalRectangle, std::size_t aControllerCount) const;
+	std::pair<int, int> GetControllerRectanglesGrid(Atrium::Math::Rectangle aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const;
+	std::vector<Atrium::Math::Rectangle> GetControllerRectangles(Atrium::Math::Rectangle aTotalRectangle, std::size_t aControllerCount) const;
 
 	void RenderController(ChartController& aController);
 	void RenderNotes(ChartController& aController, const ChartGuitarTrack& aTrack);
 
 	void QueueFretboardQuads();
 
-	void QueueQuad(RoseGold::Math::Matrix aTransform, std::optional<RoseGold::Color32> aColor, std::optional<RoseGold::Math::Rectangle> aUVRectangle);
-	void FlushQuads(RoseGold::Core::FrameContext& aContext);
+	void QueueQuad(Atrium::Math::Matrix aTransform, std::optional<Atrium::Color32> aColor, std::optional<Atrium::Math::Rectangle> aUVRectangle);
+	void FlushQuads(Atrium::Core::FrameContext& aContext);
 
 	ChartPlayer& myPlayer;
 
 	std::unique_ptr<Mesh> myQuadMesh;
-	std::shared_ptr<RoseGold::Core::PipelineState> myQuadPipelineState;
+	std::shared_ptr<Atrium::Core::PipelineState> myQuadPipelineState;
 
-	std::shared_ptr<RoseGold::Core::Texture> myAtlas;
-	std::shared_ptr<RoseGold::Core::Texture> myFretboardTexture;
+	std::shared_ptr<Atrium::Core::Texture> myAtlas;
+	std::shared_ptr<Atrium::Core::Texture> myFretboardTexture;
 
 	std::vector<ChartQuadInstance> myQuadInstanceData;
-	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myQuadInstanceBuffer;
+	std::shared_ptr<Atrium::Core::GraphicsBuffer> myQuadInstanceBuffer;
 	std::size_t myLastQuadFlush = 0;
 
-	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myCameraMatrices;
+	std::shared_ptr<Atrium::Core::GraphicsBuffer> myCameraMatrices;
 
 	std::unique_ptr<Mesh> myFretboardMesh;
-	std::shared_ptr<RoseGold::Core::PipelineState> myFretboardPipelineState;
-	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myFretboardModelViewProjection;
+	std::shared_ptr<Atrium::Core::PipelineState> myFretboardPipelineState;
+	std::shared_ptr<Atrium::Core::GraphicsBuffer> myFretboardModelViewProjection;
 };

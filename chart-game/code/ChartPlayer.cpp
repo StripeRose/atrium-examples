@@ -24,7 +24,7 @@ ChartPlayer::State ChartPlayer::GetState() const
 
 void ChartPlayer::Pause()
 {
-	RoseGold::Debug::Log("Chart pause.");
+	Atrium::Debug::Log("Chart pause.");
 	myState = InternalState::Paused;
 }
 
@@ -33,7 +33,7 @@ void ChartPlayer::Play()
 	if (myChartData == nullptr)
 		return;
 
-	RoseGold::Debug::Log("Chart play.");
+	Atrium::Debug::Log("Chart play.");
 	switch (myState)
 	{
 	case InternalState::Playing:
@@ -90,7 +90,7 @@ void ChartPlayer::SetChartData(const ChartData& aData)
 
 void ChartPlayer::Stop()
 {
-	RoseGold::Debug::Log("Chart stop.");
+	Atrium::Debug::Log("Chart stop.");
 	myState = InternalState::Stopped;
 	myPlayhead = std::chrono::microseconds(0);
 }

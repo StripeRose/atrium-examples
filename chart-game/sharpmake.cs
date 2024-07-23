@@ -1,9 +1,9 @@
 using System.IO;
 
-[module: Sharpmake.Include("../rose-gold/engine/sharpmake.cs")]
+[module: Sharpmake.Include("../atrium/engine/sharpmake.cs")]
 
 [Sharpmake.Generate]
-public class ChartGame_Executable : RoseGold.ExecutableProject
+public class ChartGame_Executable : Atrium.ExecutableProject
 {
     public ChartGame_Executable()
     {
@@ -18,7 +18,7 @@ public class ChartGame_Executable : RoseGold.ExecutableProject
         conf.SolutionFolder = "Executables";
         conf.ProjectPath = "[project.SharpmakeCsPath]/code/";
         
-        conf.AddPrivateDependency<RoseGold.Engine>(target);
+        conf.AddPrivateDependency<Atrium.Engine>(target);
 
         conf.VcxprojUserFile = new Sharpmake.Project.Configuration.VcxprojUserFileSettings();
         conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = "$(OutputPath)../data/";
@@ -26,7 +26,7 @@ public class ChartGame_Executable : RoseGold.ExecutableProject
 }
 
 [Sharpmake.Generate]
-public class ChartGame_CoreOnlySolution : RoseGold.Solution
+public class ChartGame_CoreOnlySolution : Atrium.Solution
 {
     public ChartGame_CoreOnlySolution()
     {
@@ -49,7 +49,7 @@ public static class Main
     {
         FileInfo fileInfo = Sharpmake.Util.GetCurrentSharpmakeFileInfo();
 
-        RoseGold.Configuration.BuildDirectory = Path.Combine(
+        Atrium.Configuration.BuildDirectory = Path.Combine(
             fileInfo.DirectoryName,
             "build"
         );

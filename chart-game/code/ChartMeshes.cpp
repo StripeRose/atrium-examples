@@ -1,7 +1,7 @@
 // Filter "Chart/Rendering"
 #include "ChartMeshes.hpp"
 
-std::unique_ptr<Mesh> CreateFretboardMesh(RoseGold::Core::GraphicsAPI& aGraphicsAPI)
+std::unique_ptr<Mesh> CreateFretboardMesh(Atrium::Core::GraphicsAPI& aGraphicsAPI)
 {
 	std::unique_ptr<ChartFretboardMesh> mesh(new ChartFretboardMesh(aGraphicsAPI));
 	std::vector<ChartFretboardVertex> vertices;
@@ -18,7 +18,7 @@ std::unique_ptr<Mesh> CreateFretboardMesh(RoseGold::Core::GraphicsAPI& aGraphics
 	return mesh;
 }
 
-std::unique_ptr<Mesh> CreateQuadMesh(RoseGold::Core::GraphicsAPI& aGraphicsAPI)
+std::unique_ptr<Mesh> CreateQuadMesh(Atrium::Core::GraphicsAPI& aGraphicsAPI)
 {
 	std::unique_ptr<ChartQuadMesh> mesh(new ChartQuadMesh(aGraphicsAPI));
 	std::vector<ChartQuadVertex> vertices;
@@ -35,26 +35,26 @@ std::unique_ptr<Mesh> CreateQuadMesh(RoseGold::Core::GraphicsAPI& aGraphicsAPI)
 	return mesh;
 }
 
-std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> ChartFretboardVertex::GetInputLayout()
+std::vector<Atrium::Core::PipelineStateDescription::InputLayoutEntry> ChartFretboardVertex::GetInputLayout()
 {
-	std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> layout;
-	layout.emplace_back("POSITION", RoseGold::Core::GraphicsFormat::R32G32B32_SFloat);
-	layout.emplace_back("TEXCOORD", RoseGold::Core::GraphicsFormat::R32G32_SFloat);
+	std::vector<Atrium::Core::PipelineStateDescription::InputLayoutEntry> layout;
+	layout.emplace_back("POSITION", Atrium::Core::GraphicsFormat::R32G32B32_SFloat);
+	layout.emplace_back("TEXCOORD", Atrium::Core::GraphicsFormat::R32G32_SFloat);
 	return layout;
 }
 
-std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> ChartQuadVertex::GetInputLayout()
+std::vector<Atrium::Core::PipelineStateDescription::InputLayoutEntry> ChartQuadVertex::GetInputLayout()
 {
-	std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> layout;
-	layout.emplace_back("POSITION", RoseGold::Core::GraphicsFormat::R32G32B32_SFloat);
+	std::vector<Atrium::Core::PipelineStateDescription::InputLayoutEntry> layout;
+	layout.emplace_back("POSITION", Atrium::Core::GraphicsFormat::R32G32B32_SFloat);
 
-	layout.emplace_back("TRANSFORM", 0, RoseGold::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
-	layout.emplace_back("TRANSFORM", 1, RoseGold::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
-	layout.emplace_back("TRANSFORM", 2, RoseGold::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
-	layout.emplace_back("TRANSFORM", 3, RoseGold::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
+	layout.emplace_back("TRANSFORM", 0, Atrium::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
+	layout.emplace_back("TRANSFORM", 1, Atrium::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
+	layout.emplace_back("TRANSFORM", 2, Atrium::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
+	layout.emplace_back("TRANSFORM", 3, Atrium::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
 
-	layout.emplace_back("TEXCOORD", 0, RoseGold::Core::GraphicsFormat::R32G32_SFloat, 1, 1);
-	layout.emplace_back("TEXCOORD", 1, RoseGold::Core::GraphicsFormat::R32G32_SFloat, 1, 1);
-	layout.emplace_back("COLOR", RoseGold::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
+	layout.emplace_back("TEXCOORD", 0, Atrium::Core::GraphicsFormat::R32G32_SFloat, 1, 1);
+	layout.emplace_back("TEXCOORD", 1, Atrium::Core::GraphicsFormat::R32G32_SFloat, 1, 1);
+	layout.emplace_back("COLOR", Atrium::Core::GraphicsFormat::R32G32B32A32_SFloat, 1, 1);
 	return layout;
 }

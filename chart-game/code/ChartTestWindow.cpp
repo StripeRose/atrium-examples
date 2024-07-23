@@ -94,7 +94,7 @@ void ChartTestWindow::ImGui_ChartList()
 
 	if (ImGui::Button("..."))
 	{
-		RoseGold::Editor::FolderBrowserDialog pickFolder;
+		Atrium::Editor::FolderBrowserDialog pickFolder;
 		auto pickedFolder = pickFolder.GetSingle();
 		if (pickedFolder.has_value())
 			mySongsDirectory = pickedFolder.value();
@@ -276,7 +276,7 @@ void ChartTestWindow::ImGui_Track(ChartTrack& aTrack)
 		break;
 	}
 
-	RoseGold::Debug::Assert(trackTypeString, "Track rendering needs a valid track.");
+	Atrium::Debug::Assert(trackTypeString, "Track rendering needs a valid track.");
 
 	if (!ImGui::TreeNode(trackTypeString))
 		return;
@@ -331,7 +331,7 @@ void ChartTestWindow::ImGui_Track(ChartTrack& aTrack)
 	ImGui::TreePop();
 }
 
-void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
+void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, Atrium::Math::Vector2 aPoint, Atrium::Math::Vector2 aSize)
 {
 	ZoneScoped;
 	const ImVec2 canvasTopLeft(aPoint.X, aPoint.Y);
@@ -386,7 +386,7 @@ void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vect
 	}
 }
 
-void ChartTestWindow::ImGui_Track_HitWindow(RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
+void ChartTestWindow::ImGui_Track_HitWindow(Atrium::Math::Vector2 aPoint, Atrium::Math::Vector2 aSize)
 {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -396,7 +396,7 @@ void ChartTestWindow::ImGui_Track_HitWindow(RoseGold::Math::Vector2 aPoint, Rose
 		IM_COL32(100, 100, 100, 255), 2.f);
 }
 
-void ChartTestWindow::ImGui_Track_Beats(RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
+void ChartTestWindow::ImGui_Track_Beats(Atrium::Math::Vector2 aPoint, Atrium::Math::Vector2 aSize)
 {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -446,8 +446,8 @@ void ChartTestWindow::ImGui_Track_TimeSignatures()
 
 	if (isVisible)
 	{
-		const RoseGold::Math::Vector2 point(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
-		const RoseGold::Math::Vector2 size(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y);
+		const Atrium::Math::Vector2 point(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
+		const Atrium::Math::Vector2 size(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y);
 
 		ImGui_Track_Beats(point, size);
 		ImGui_Track_HitWindow(point, size);

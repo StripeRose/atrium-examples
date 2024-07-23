@@ -27,9 +27,9 @@ private:
 	void ImGui_Player_PlayControls();
 
 	void ImGui_Track(ChartTrack& aTrack);
-	void ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize);
-	void ImGui_Track_HitWindow(RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize);
-	void ImGui_Track_Beats(RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize);
+	void ImGui_Track(ChartGuitarTrack& aTrack, Atrium::Math::Vector2 aPoint, Atrium::Math::Vector2 aSize);
+	void ImGui_Track_HitWindow(Atrium::Math::Vector2 aPoint, Atrium::Math::Vector2 aSize);
+	void ImGui_Track_Beats(Atrium::Math::Vector2 aPoint, Atrium::Math::Vector2 aSize);
 	void ImGui_Track_TimeSignatures();
 
 	void ImGui_Track_Note(const ChartNoteRange& aNote, float aStartX, float anEndX, float aLaneY);

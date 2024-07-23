@@ -12,7 +12,7 @@
 class ExampleGame
 {
 public:
-	ExampleGame(RoseGold::EngineInstance& anEngineInstance);
+	ExampleGame(Atrium::EngineInstance& anEngineInstance);
 	~ExampleGame();
 
 private:
@@ -23,9 +23,9 @@ private:
 
 	void OnStart_SetupWindows();
 
-	RoseGold::EngineInstance& myEngineInstance;
+	Atrium::EngineInstance& myEngineInstance;
 
-	std::shared_ptr<RoseGold::Core::RenderTexture> myWindow1;
+	std::shared_ptr<Atrium::Core::RenderTexture> myWindow1;
 
 	ChartTestWindow myChartTestWindow;
 	ChartRenderer myChartRenderer;

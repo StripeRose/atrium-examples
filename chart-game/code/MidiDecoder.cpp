@@ -4,7 +4,7 @@
 
 #include <fstream>
 
-using namespace RoseGold;
+using namespace Atrium;
 
 template <typename T>
 std::uint8_t ReadFixed(std::istream& aStream, T& anOut, unsigned int anOffset = 0)

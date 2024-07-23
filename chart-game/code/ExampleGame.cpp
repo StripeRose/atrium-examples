@@ -2,7 +2,7 @@
 
 #include <Common_Diagnostics.hpp>
 
-ExampleGame::ExampleGame(RoseGold::EngineInstance& anEngineInstance)
+ExampleGame::ExampleGame(Atrium::EngineInstance& anEngineInstance)
 	: myEngineInstance(anEngineInstance)
 	, myChartTestWindow(myChartPlayer)
 	, myChartRenderer(myChartPlayer)
@@ -37,14 +37,14 @@ void ExampleGame::HandleLoop()
 
 	ZoneScoped;
 
-	using namespace RoseGold::Core;
+	using namespace Atrium::Core;
 	FrameContext& frameContext = myEngineInstance.GetGraphicsAPI().GetCurrentFrameContext();
 
 	if (myWindow1)
 	{
 		{
 			CONTEXT_ZONE(frameContext, "Clear");
-			frameContext.ClearColor(myWindow1, RoseGold::Color::Predefined::Black);
+			frameContext.ClearColor(myWindow1, Atrium::Color::Predefined::Black);
 			frameContext.ClearDepth(myWindow1, 1.f, 0);
 		}
 
@@ -65,12 +65,12 @@ void ExampleGame::HandleExit()
 void ExampleGame::OnStart_SetupWindows()
 {
 	ZoneScoped;
-	RoseGold::Core::WindowManager::CreationParameters windowParams;
+	Atrium::Core::WindowManager::CreationParameters windowParams;
 	windowParams.Title = "Window 1";
 	windowParams.Size = { 640, 480 };
 	auto window1 = myEngineInstance.GetWindowManager().NewWindow(windowParams);
 	myWindow1 = myEngineInstance.GetGraphicsAPI().GetResourceManager().CreateRenderTextureForWindow(*window1);
-	window1->Closed.Connect(nullptr, [&](RoseGold::Core::Window&) {
+	window1->Closed.Connect(nullptr, [&](Atrium::Core::Window&) {
 		myWindow1.reset();
 		});
 

@@ -133,7 +133,7 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 
 				if (currentTrack && myTracks.contains(currentTrack->GetType()))
 				{
-					RoseGold::Debug::LogError("Duplicate track won't be processed.");
+					Atrium::Debug::LogError("Duplicate track won't be processed.");
 					currentTrack.reset();
 				}
 			}
