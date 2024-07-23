@@ -3,7 +3,7 @@
 
 #include "MidiDecoder.hpp"
 
-#include "Common_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 
 #define MIDI_DEFAULT_TEMPO (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)) * 120);
 

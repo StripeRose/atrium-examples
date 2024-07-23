@@ -4,7 +4,7 @@
 #include "ChartData.hpp"
 #include "ChartPlayer.hpp"
 
-#include "Common_Math.hpp"
+#include "Core_Math.hpp"
 
 #include <filesystem>
 #include <map>

@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "Graphics_Buffer.hpp"
-#include "Graphics_Manager.hpp"
-#include "Graphics_Pipeline.hpp"
+#include "Core_GraphicsBuffer.hpp"
+#include "Core_GraphicsAPI.hpp"
+#include "Core_GraphicsPipeline.hpp"
 
 class Mesh
 {

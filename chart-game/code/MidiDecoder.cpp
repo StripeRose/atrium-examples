@@ -1,6 +1,6 @@
 #include "MidiDecoder.hpp"
 
-#include <Common_Diagnostics.hpp>
+#include <Core_Diagnostics.hpp>
 
 #include <fstream>
 

@@ -1,6 +1,6 @@
 #include "ExampleGame.hpp"
 
-#include <Common_Diagnostics.hpp>
+#include <Core_Diagnostics.hpp>
 
 ExampleGame::ExampleGame(Atrium::EngineInstance& anEngineInstance)
 	: myEngineInstance(anEngineInstance)

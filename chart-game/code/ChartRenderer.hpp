@@ -4,9 +4,9 @@
 #include "ChartMeshes.hpp"
 #include "Mesh.hpp"
 
-#include "Common_Math.hpp"
+#include "Core_Math.hpp"
 
-#include "Graphics_FrameContext.hpp"
+#include "Core_FrameContext.hpp"
 
 class ChartController;
 class ChartGuitarTrack;
