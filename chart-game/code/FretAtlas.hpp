@@ -45,12 +45,12 @@ namespace FretAtlas
 namespace FretboardMatrices
 {
 	constexpr Atrium::Math::Vector3 CameraPosition(0, 0.9f, -0.55f);
-	constexpr Atrium::Math::Matrix CameraTranslation = Atrium::Math::MakeMatrix::Translation(FretboardMatrices::CameraPosition.X, FretboardMatrices::CameraPosition.Y, FretboardMatrices::CameraPosition.Z);
-	constexpr Atrium::Math::Matrix CameraRotation = Atrium::Math::MakeMatrix::RotationX(Atrium::Math::ToRadians(30.f));
+	constexpr Atrium::Math::Matrix CameraTranslation = Atrium::Math::Matrix::CreateTranslation(FretboardMatrices::CameraPosition.X, FretboardMatrices::CameraPosition.Y, FretboardMatrices::CameraPosition.Z);
+	constexpr Atrium::Math::Matrix CameraRotation = Atrium::Math::Matrix::CreateRotationX(Atrium::Math::ToRadians(30.f));
 
-	constexpr Atrium::Math::Matrix CameraViewMatrix = (CameraRotation * CameraTranslation).Invert().value();
+	constexpr Atrium::Math::Matrix CameraViewMatrix = (CameraRotation * CameraTranslation).Inverse();
 
-	constexpr Atrium::Math::Matrix CameraProjectionMatrix = Atrium::Math::MakeMatrix::PerspectiveFieldOfView(Atrium::Math::ToRadians(55.f), 1.f, 0.0001f, 100.f);
+	constexpr Atrium::Math::Matrix CameraProjectionMatrix = Atrium::Math::Matrix::CreatePerspectiveFieldOfView(Atrium::Math::ToRadians(55.f), 1.f, 0.0001f, 100.f);
 
 	constexpr float String_Offset[] =
 	{
@@ -62,17 +62,17 @@ namespace FretboardMatrices
 	};
 
 	constexpr Atrium::Math::Matrix String_Translations[] = {
-		Atrium::Math::MakeMatrix::Translation(String_Offset[0], 0, 0),
-		Atrium::Math::MakeMatrix::Translation(String_Offset[1], 0, 0),
-		Atrium::Math::MakeMatrix::Translation(String_Offset[2], 0, 0),
-		Atrium::Math::MakeMatrix::Translation(String_Offset[3], 0, 0),
-		Atrium::Math::MakeMatrix::Translation(String_Offset[4], 0, 0)
+		Atrium::Math::Matrix::CreateTranslation(String_Offset[0], 0, 0),
+		Atrium::Math::Matrix::CreateTranslation(String_Offset[1], 0, 0),
+		Atrium::Math::Matrix::CreateTranslation(String_Offset[2], 0, 0),
+		Atrium::Math::Matrix::CreateTranslation(String_Offset[3], 0, 0),
+		Atrium::Math::Matrix::CreateTranslation(String_Offset[4], 0, 0)
 	};
 
 	constexpr Atrium::Math::Matrix String_Base
-		= Atrium::Math::MakeMatrix::Translation(-0.5f, 0, 0)
-		* Atrium::Math::MakeMatrix::Scale(0.120075f, 1.9212f, 0)
-		* Atrium::Math::MakeMatrix::RotationX(Atrium::Math::HalfPi<float>)
+		= Atrium::Math::Matrix::CreateTranslation(-0.5f, 0, 0)
+		* Atrium::Math::Matrix::CreateScale(0.120075f, 1.9212f, 0)
+		* Atrium::Math::Matrix::CreateRotationX(Atrium::Math::HalfPi)
 		;
 
 	constexpr Atrium::Math::Matrix Strings[] = {
@@ -86,11 +86,11 @@ namespace FretboardMatrices
 	constexpr Atrium::Math::Matrix FaceCamera(Atrium::Math::Vector3 aPosition, Atrium::Math::Vector2 aSize = { 1, 1 }, Atrium::Math::Vector2 anAnchor = { 0.5f, 0.5f })
 	{
 		return
-			Atrium::Math::MakeMatrix::Translation(-anAnchor.X, -anAnchor.Y, 0)
-			* Atrium::Math::MakeMatrix::RotationY(Atrium::Math::Pi<float>)
-			* Atrium::Math::MakeMatrix::Scale(aSize.X, aSize.Y, 0)
-			* CameraRotation
-			* Atrium::Math::MakeMatrix::Translation(aPosition.X, aPosition.Y, aPosition.Z)
+			Atrium::Math::Matrix::CreateTranslation(-anAnchor.X, -anAnchor.Y, 0)
+			* Atrium::Math::Matrix::CreateRotationY(Atrium::Math::Pi)
+			* Atrium::Math::Matrix::CreateScale(aSize.X, aSize.Y, 0)
+			* Atrium::Math::Matrix::CreateRotationX(Atrium::Math::ToRadians(30.f))
+			* Atrium::Math::Matrix::CreateTranslation(aPosition.X, aPosition.Y, aPosition.Z)
 			;
 	}
 

@@ -295,7 +295,7 @@ void ChartRenderer::RenderNotes(ChartController& aController, const ChartGuitarT
 
 		Atrium::Math::Matrix noteTransform
 			= FretboardMatrices::Targets[note.Lane]
-			* Atrium::Math::MakeMatrix::Translation(
+			* Atrium::Math::Matrix::CreateTranslation(
 				0,
 				0,
 				Atrium::Math::Lerp<float>(
