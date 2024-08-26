@@ -18,7 +18,10 @@ namespace FretAtlas
 {
 	constexpr Atrium::Math::Rectangle ToUV(float u, float v, float width, float height)
 	{
-		return Atrium::Math::Rectangle::FromExtents({ (u + width) / 1024.f, (v + height) / 1024.f }, { u / 1024.f, v / 1024.f });
+		return Atrium::Math::Rectangle(
+			Atrium::PointT<float>((u + width) / 1024.f, (v + height) / 1024.f),
+			Atrium::SizeT<float>((-width) / 1024.f, (-height) / 1024.f)
+		);
 	}
 
 	constexpr Atrium::Math::Rectangle White = ToUV(256, 330, 4, 4);
