@@ -29,9 +29,9 @@ struct ChartQuadVertex
 
 struct ChartQuadInstance
 {
-	Atrium::Math::Matrix Transform;
-	Atrium::Math::Vector2 UVMin;
-	Atrium::Math::Vector2 UVMax;
+	Atrium::Matrix Transform;
+	Atrium::Vector2 UVMin;
+	Atrium::Vector2 UVMax;
 	float Color[4];
 };
 

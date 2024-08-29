@@ -331,7 +331,7 @@ void ChartTestWindow::ImGui_Track(ChartTrack& aTrack)
 	ImGui::TreePop();
 }
 
-void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, Atrium::Math::Vector2 aPoint, Atrium::Math::Vector2 aSize)
+void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, Atrium::Vector2 aPoint, Atrium::Vector2 aSize)
 {
 	ZoneScoped;
 	const ImVec2 canvasTopLeft(aPoint.X, aPoint.Y);
@@ -386,7 +386,7 @@ void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, Atrium::Math::Vector
 	}
 }
 
-void ChartTestWindow::ImGui_Track_HitWindow(Atrium::Math::Vector2 aPoint, Atrium::Math::Vector2 aSize)
+void ChartTestWindow::ImGui_Track_HitWindow(Atrium::Vector2 aPoint, Atrium::Vector2 aSize)
 {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -396,7 +396,7 @@ void ChartTestWindow::ImGui_Track_HitWindow(Atrium::Math::Vector2 aPoint, Atrium
 		IM_COL32(100, 100, 100, 255), 2.f);
 }
 
-void ChartTestWindow::ImGui_Track_Beats(Atrium::Math::Vector2 aPoint, Atrium::Math::Vector2 aSize)
+void ChartTestWindow::ImGui_Track_Beats(Atrium::Vector2 aPoint, Atrium::Vector2 aSize)
 {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 

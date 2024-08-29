@@ -25,15 +25,15 @@ private:
 	void SetupQuadResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature, Atrium::Core::GraphicsFormat aColorTargetFormat);
 	void SetupFretboardResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature, Atrium::Core::GraphicsFormat aColorTargetFormat);
 
-	std::pair<int, int> GetControllerRectanglesGrid(Atrium::Math::Rectangle aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const;
-	std::vector<Atrium::Math::Rectangle> GetControllerRectangles(Atrium::Math::Rectangle aTotalRectangle, std::size_t aControllerCount) const;
+	std::pair<int, int> GetControllerRectanglesGrid(const Atrium::RectangleF& aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const;
+	std::vector<Atrium::RectangleF> GetControllerRectangles(const Atrium::RectangleF& aTotalRectangle, std::size_t aControllerCount) const;
 
 	void RenderController(ChartController& aController);
 	void RenderNotes(ChartController& aController, const ChartGuitarTrack& aTrack);
 
 	void QueueFretboardQuads();
 
-	void QueueQuad(Atrium::Math::Matrix aTransform, std::optional<Atrium::Color32> aColor, std::optional<Atrium::Math::Rectangle> aUVRectangle);
+	void QueueQuad(const Atrium::Matrix& aTransform, std::optional<Atrium::Color32> aColor, std::optional<Atrium::RectangleF> aUVRectangle);
 	void FlushQuads(Atrium::Core::FrameContext& aContext);
 
 	ChartPlayer& myPlayer;

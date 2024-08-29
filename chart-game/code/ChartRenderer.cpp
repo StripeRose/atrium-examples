@@ -10,9 +10,9 @@
 
 struct ModelViewProjection
 {
-	Atrium::Math::Matrix Model;
-	Atrium::Math::Matrix View;
-	Atrium::Math::Matrix Projection;
+	Atrium::Matrix Model;
+	Atrium::Matrix View;
+	Atrium::Matrix Projection;
 };
 
 ChartRenderer::ChartRenderer(ChartPlayer& aPlayer)
@@ -66,10 +66,10 @@ void ChartRenderer::Render(Atrium::Core::FrameContext& aContext, const std::shar
 	aContext.SetViewportAndScissorRect(Atrium::Size(aTarget->GetWidth(), aTarget->GetHeight()));
 
 	const std::vector<std::unique_ptr<ChartController>>& controllers = myPlayer.GetControllers();
-	const std::vector<Atrium::Math::Rectangle> controllerRects = GetControllerRectangles(
-		Atrium::Math::Rectangle(
-			Atrium::PointT<float>(0, 0),
-			Atrium::SizeT<float>(static_cast<float>(aTarget->GetWidth()), static_cast<float>(aTarget->GetHeight()))
+	const std::vector<Atrium::RectangleF> controllerRects = GetControllerRectangles(
+		Atrium::RectangleF(
+			Atrium::PointF(0, 0),
+			Atrium::SizeF(static_cast<float>(aTarget->GetWidth()), static_cast<float>(aTarget->GetHeight()))
 		), controllers.size());
 
 	for (unsigned int i = 0; i < controllers.size(); ++i)
@@ -112,8 +112,8 @@ void ChartRenderer::SetupQuadResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, 
 
 	struct CameraMatrices
 	{
-		Atrium::Math::Matrix View;
-		Atrium::Math::Matrix Projection;
+		Atrium::Matrix View;
+		Atrium::Matrix Projection;
 	} cameraMatrices;
 	cameraMatrices.View = FretboardMatrices::CameraViewMatrix;
 	cameraMatrices.Projection = FretboardMatrices::CameraProjectionMatrix;
@@ -141,7 +141,7 @@ void ChartRenderer::SetupFretboardResources(Atrium::Core::GraphicsAPI& aGraphics
 	myFretboardPipelineState = aGraphicsAPI.GetResourceManager().CreatePipelineState(fretboardPipelineDescription);
 
 	ModelViewProjection fretboardMatrices;
-	fretboardMatrices.Model = Atrium::Math::Matrix::Identity();
+	fretboardMatrices.Model = Atrium::Matrix::Identity();
 	fretboardMatrices.View = FretboardMatrices::CameraViewMatrix;
 	fretboardMatrices.Projection = FretboardMatrices::CameraProjectionMatrix;
 
@@ -149,7 +149,7 @@ void ChartRenderer::SetupFretboardResources(Atrium::Core::GraphicsAPI& aGraphics
 	myFretboardModelViewProjection->SetData(&fretboardMatrices, sizeof(ModelViewProjection));
 }
 
-std::pair<int, int> ChartRenderer::GetControllerRectanglesGrid(Atrium::Math::Rectangle aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const
+std::pair<int, int> ChartRenderer::GetControllerRectanglesGrid(const Atrium::RectangleF& aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const
 {
 	if (aControllerCount == 0)
 		return { 0, 0 };
@@ -180,7 +180,7 @@ std::pair<int, int> ChartRenderer::GetControllerRectanglesGrid(Atrium::Math::Rec
 	return { integerColumns.value(), integerRows.value() };
 }
 
-std::vector<Atrium::Math::Rectangle> ChartRenderer::GetControllerRectangles(Atrium::Math::Rectangle aTotalRectangle, std::size_t aControllerCount) const
+std::vector<Atrium::RectangleF> ChartRenderer::GetControllerRectangles(const Atrium::RectangleF& aTotalRectangle, std::size_t aControllerCount) const
 {
 	constexpr float CellAspectRatio = 1.f;
 
@@ -191,14 +191,14 @@ std::vector<Atrium::Math::Rectangle> ChartRenderer::GetControllerRectangles(Atri
 
 	const float gridAspectRatio = static_cast<float>(gridCells.first) / static_cast<float>(gridCells.second);
 	const float gridWidth = Atrium::Math::Min<float>(aTotalRectangle.Width, (aTotalRectangle.Height * gridAspectRatio));
-	const Atrium::SizeT<float> gridSize(gridWidth, gridWidth / gridAspectRatio);
-	const Atrium::Math::Rectangle gridRect(
+	const Atrium::SizeF gridSize(gridWidth, gridWidth / gridAspectRatio);
+	const Atrium::RectangleF gridRect(
 		aTotalRectangle.Center() - Atrium::Math::Vector2(gridSize.Width / 2, gridSize.Height / 2),
 		gridSize);
 
 	const Atrium::Math::Vector2 gridCellSize(gridRect.Width / gridCells.first, gridRect.Height / gridCells.second);
 
-	std::vector<Atrium::Math::Rectangle> rectsOut;
+	std::vector<Atrium::RectangleF> rectsOut;
 
 	for (std::size_t i = 0; i < aControllerCount; ++i)
 	{
@@ -210,7 +210,7 @@ std::vector<Atrium::Math::Rectangle> ChartRenderer::GetControllerRectangles(Atri
 			(gridRect.Center().Y + (gridRect.Height / 2)) - ((cellY + 1) * gridCellSize.Y)
 		);
 
-		rectsOut.push_back(Atrium::Math::Rectangle(Atrium::PointT<float>(position), Atrium::SizeT<float>(gridCellSize)));
+		rectsOut.push_back(Atrium::RectangleF(Atrium::PointF(position), Atrium::SizeF(gridCellSize)));
 	}
 
 	return rectsOut;
@@ -262,8 +262,8 @@ void ChartRenderer::RenderNotes(ChartController& aController, const ChartGuitarT
 		if (noteEndFretboardFraction < -0.5f || noteStartFretboardFraction > 2.f)
 			continue;
 
-		Atrium::Math::Rectangle noteFill = FretAtlas::Note_Color;
-		Atrium::Math::Rectangle noteShell = FretAtlas::Note_Shell_Strum;
+		Atrium::RectangleF noteFill = FretAtlas::Note_Color;
+		Atrium::RectangleF noteShell = FretAtlas::Note_Shell_Strum;
 
 		switch (note.Type)
 		{
@@ -298,9 +298,9 @@ void ChartRenderer::RenderNotes(ChartController& aController, const ChartGuitarT
 				break;
 		}
 
-		Atrium::Math::Matrix noteTransform
+		Atrium::Matrix noteTransform
 			= FretboardMatrices::Targets[note.Lane]
-			* Atrium::Math::Matrix::CreateTranslation(
+			* Atrium::Matrix::CreateTranslation(
 				0,
 				0,
 				Atrium::Math::Lerp<float>(
@@ -338,7 +338,7 @@ void ChartRenderer::QueueFretboardQuads()
 	QueueQuad(FretboardMatrices::Targets[4], NoteColor::Orange, FretAtlas::Note_Target_R2_Head);
 }
 
-void ChartRenderer::QueueQuad(Atrium::Math::Matrix aTransform, std::optional<Atrium::Color32> aColor, std::optional<Atrium::Math::Rectangle> aUVRectangle)
+void ChartRenderer::QueueQuad(const Atrium::Matrix& aTransform, std::optional<Atrium::Color32> aColor, std::optional<Atrium::RectangleF> aUVRectangle)
 {
 	ChartQuadInstance& instance = myQuadInstanceData.emplace_back();
 	instance.Transform = aTransform;
@@ -349,9 +349,9 @@ void ChartRenderer::QueueQuad(Atrium::Math::Matrix aTransform, std::optional<Atr
 	instance.Color[2] = static_cast<float>(color.B) / 255.f;
 	instance.Color[3] = static_cast<float>(color.A) / 255.f;
 
-	const auto uvRectangle = aUVRectangle.value_or(Atrium::Math::Rectangle(Atrium::PointT<float>(0, 0), Atrium::SizeT<float>(1, 1)));
-	instance.UVMin = Atrium::Math::Vector2(uvRectangle.TopLeft());
-	instance.UVMax = Atrium::Math::Vector2(uvRectangle.BottomRight());
+	const auto uvRectangle = aUVRectangle.value_or(Atrium::RectangleF(Atrium::PointF(0, 0), Atrium::SizeF(1, 1)));
+	instance.UVMin = Atrium::Vector2(uvRectangle.TopLeft());
+	instance.UVMax = Atrium::Vector2(uvRectangle.BottomRight());
 }
 
 void ChartRenderer::FlushQuads(Atrium::Core::FrameContext& aContext)
