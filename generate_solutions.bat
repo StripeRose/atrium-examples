@@ -1,5 +1,3 @@
 @echo off
 
-if %errorlevel% EQU 0 (
-    "./atrium/tools/Sharpmake/Sharpmake.Application/bin/Release/net6.0/Sharpmake.Application.exe" "/sources('chart-game/sharpmake.cs')"
-)
+call "%~dp0atrium/tools/generate_sharpmake.bat" "%~dp0chart-game/sharpmake.cs"
