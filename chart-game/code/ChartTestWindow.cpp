@@ -1,6 +1,9 @@
 // Filter "Chart"
 #include "ChartTestWindow.hpp"
+
+#include "ChartAIController.hpp"
 #include "ChartData.hpp"
+#include "ChartHumanController.hpp"
 #include "ChartTrack.hpp"
 
 #include "Core_Diagnostics.hpp"
