@@ -2,8 +2,10 @@
 #include "ChartController.hpp"
 
 #include "ChartData.hpp"
+#include "ChartTestWindow.hpp"
 
 #include "Core_Diagnostics.hpp"
+#include "Core_InputSource.hpp"
 
 #include "Editor_GUI.hpp"
 
@@ -11,12 +13,14 @@ ChartController::ChartController()
 	: myTrackDifficulty(ChartTrackDifficulty::Hard)
 	, myTrackType(ChartTrackType::LeadGuitar)
 {
-
+	myLaneStates.fill(false);
 }
 
 #if IS_IMGUI_ENABLED
-void ChartController::ImGui()
+void ChartController::ImGui(ChartTestWindow& aTestWindow)
 {
+	aTestWindow.ImGui_Lanes(myTrackType, myLaneStates);
+
 	int currentTrackType = static_cast<int>(GetTrackType());
 	if (ImGui::Combo("Track", &currentTrackType, ChartTrackTypeCombo))
 	{
@@ -44,10 +48,10 @@ void ChartController::SetTrackDifficulty(ChartTrackDifficulty aDifficulty)
 }
 
 #if IS_IMGUI_ENABLED
-void ChartAIController::ImGui()
+void ChartAIController::ImGui(ChartTestWindow& aTestWindow)
 {
 	ImGui::TextUnformatted("AI player");
-	ChartController::ImGui();
+	ChartController::ImGui(aTestWindow);
 
 	ImGui::TextUnformatted("Next note in:");
 
@@ -55,12 +59,6 @@ void ChartAIController::ImGui()
 		[](const char* aLabel, std::chrono::microseconds aNext)
 		{
 			ImGui::Text("%s: %f", aLabel, static_cast<float>(aNext.count()) / 1000000.f);
-
-			bool v = (aNext < std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(30)));
-			ImGui::SameLine();
-			ImGui::BeginDisabled();
-			ImGui::Checkbox("", &v);
-			ImGui::EndDisabled();
 		};
 
 	nextNote("GRN", myNextNotes[0].second);
@@ -85,6 +83,38 @@ void ChartAIController::OnPlayheadStep(const std::chrono::microseconds&, const s
 			myNextNotes[i] = { next, next->Start - aNew };
 		else
 			myNextNotes[i] = { nullptr, std::chrono::microseconds(-1) };
+
+		const bool activateNote = (myNextNotes[i].second < std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(30)));
+		myLaneStates[i] = activateNote;
 	}
 }
 #endif
+
+void ChartHumanController::HandleInput(const Atrium::Core::InputEvent& anInputEvent)
+{
+	using namespace Atrium::Core;
+
+	std::optional<int> lane;
+
+	switch (anInputEvent.Source)
+	{
+		case InputSourceId::Keyboard::Alpha1:
+			lane = 0;
+			break;
+		case InputSourceId::Keyboard::Alpha2:
+			lane = 1;
+			break;
+		case InputSourceId::Keyboard::Alpha3:
+			lane = 2;
+			break;
+		case InputSourceId::Keyboard::Alpha4:
+			lane = 3;
+			break;
+		case InputSourceId::Keyboard::Alpha5:
+			lane = 4;
+			break;
+	}
+
+	if (lane.has_value())
+		myLaneStates[lane.value()] = anInputEvent.Value > 0.5f;
+}

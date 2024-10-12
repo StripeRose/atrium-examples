@@ -49,6 +49,7 @@ public static class Main
     {
         FileInfo fileInfo = Sharpmake.Util.GetCurrentSharpmakeFileInfo();
 
+        Atrium.Configuration.SolutionDirectory = fileInfo.DirectoryName;
         Atrium.Configuration.BuildDirectory = Path.Combine(
             fileInfo.DirectoryName,
             "build"

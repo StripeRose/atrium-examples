@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Core_InputEvent.hpp>
 #include <Engine_Instance.hpp>
 
 #include "ChartRenderer.hpp"
@@ -22,6 +23,8 @@ private:
 	void HandleExit();
 
 	void OnStart_SetupWindows();
+
+	void HandleInput(const Atrium::Core::InputEvent& anInputEvent);
 
 	Atrium::EngineInstance& myEngineInstance;
 

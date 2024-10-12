@@ -8,6 +8,8 @@
 #include "Editor_FileDialog.hpp"
 #include "Editor_GUI.hpp"
 
+#include <array>
+
 #if IS_IMGUI_ENABLED
 #define NOTE_SILVER       IM_COL32(217, 226, 228, 255)
 #define NOTE_BLACK        IM_COL32(10, 10, 10, 255)
@@ -83,6 +85,50 @@ void ChartTestWindow::ImGui()
 	}
 	ImGui::End();
 #endif
+}
+
+void ChartTestWindow::ImGui_Lanes(ChartTrackType aTrackType, const std::span<const bool>& someStates)
+{
+	auto drawLanes = [](const std::span<const ImColor>& someColors, const std::span<const bool>& someStates)
+		{
+			for (int i = 0; i < someColors.size(); ++i)
+			{
+				const ImVec4 activeColor = someColors[i];
+
+				ImVec4 neutralColor = activeColor;
+				neutralColor.x *= 0.5f;
+				neutralColor.y *= 0.5f;
+				neutralColor.z *= 0.5f;
+
+				const bool state = someStates[i];
+
+				if (i > 0)
+					ImGui::SameLine();
+
+				ImGui::PushID(i);
+				ImGui::PushStyleColor(ImGuiCol_CheckMark, activeColor);
+				ImGui::PushStyleColor(ImGuiCol_FrameBg, neutralColor);
+				ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, neutralColor);
+				ImGui::PushStyleColor(ImGuiCol_FrameBgActive, neutralColor);
+				ImGui::RadioButton("", state);
+				ImGui::PopStyleColor(4);
+				ImGui::PopID();
+			}
+		};
+
+	switch (aTrackType)
+	{
+		case ChartTrackType::LeadGuitar:
+		case ChartTrackType::RhythmGuitar:
+		case ChartTrackType::BassGuitar:
+			drawLanes(
+				std::array<ImColor, 5> { NOTE_GREEN, NOTE_RED, NOTE_YELLOW, NOTE_BLUE, NOTE_ORANGE },
+				someStates
+			);
+			break;
+		default:
+			break;
+	}
 }
 
 #if IS_IMGUI_ENABLED
@@ -162,6 +208,10 @@ void ChartTestWindow::ImGui_Controllers()
 	if (ImGui::Button("Add AI"))
 		myChartPlayer.AddController<ChartAIController>();
 
+	ImGui::SameLine();
+	if (ImGui::Button("Add Human"))
+		myChartPlayer.AddController<ChartHumanController>();
+
 	ChartController* removedController = nullptr;
 
 	for (std::size_t i = 0; i < myChartPlayer.GetControllers().size(); ++i)
@@ -173,7 +223,7 @@ void ChartTestWindow::ImGui_Controllers()
 		if (ImGui::CollapsingHeader(std::format("{}: {}", i + 1, controller->GetName()).c_str(), &keepOpen, ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			ImGui::Indent();
-			controller->ImGui();
+			controller->ImGui(*this);
 			ImGui::Unindent();
 		}
 

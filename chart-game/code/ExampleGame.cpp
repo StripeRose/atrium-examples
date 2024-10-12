@@ -11,10 +11,20 @@ ExampleGame::ExampleGame(Atrium::EngineInstance& anEngineInstance)
 	myEngineInstance.OnLoop.Connect(this, [&]() { HandleLoop(); });
 	myEngineInstance.OnImGui.Connect(this, [&]() { HandleImGui(); });
 	myEngineInstance.OnExit.Connect(this, [&]() { HandleExit(); });
+
+	myEngineInstance.GetInputAPI().OnInput.Connect(
+		this,
+		[&](const auto& anInputEvent)
+		{
+			HandleInput(anInputEvent);
+		}
+	);
 }
 
 ExampleGame::~ExampleGame()
 {
+	myEngineInstance.GetInputAPI().OnInput.Disconnect(this);
+
 	myEngineInstance.OnStart.Disconnect(this);
 	myEngineInstance.OnLoop.Disconnect(this);
 	myEngineInstance.OnImGui.Disconnect(this);
@@ -75,4 +85,10 @@ void ExampleGame::OnStart_SetupWindows()
 		});
 
 	myEngineInstance.InitializeImGui(*window1, myWindow1);
+}
+
+void ExampleGame::HandleInput(const Atrium::Core::InputEvent& anInputEvent)
+{
+	for (const auto& controller : myChartPlayer.GetControllers())
+		controller->HandleInput(anInputEvent);
 }

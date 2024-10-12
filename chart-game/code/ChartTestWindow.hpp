@@ -8,14 +8,16 @@
 
 #include <filesystem>
 #include <map>
+#include <span>
 
 class ChartTestWindow
 {
 public:
-	ChartTestWindow() = delete;
 	ChartTestWindow(ChartPlayer& aPlayer);
 
 	void ImGui();
+
+	void ImGui_Lanes(ChartTrackType aTrackType, const std::span<const bool>& someStates);
 
 private:
 #if IS_IMGUI_ENABLED
