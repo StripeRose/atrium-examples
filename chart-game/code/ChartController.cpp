@@ -12,10 +12,20 @@ ChartController::ChartController()
 	myLaneStates.fill(false);
 }
 
+void ChartController::HandleChartChange(const ChartData& /*aData*/)
+{
+	myLastStrum.reset();
+}
+
+void ChartController::HandlePlayheadStep(const std::chrono::microseconds& /*aPrevious*/, const std::chrono::microseconds& aNew)
+{
+	myLastPlayhead = aNew;
+}
+
 #if IS_IMGUI_ENABLED
 void ChartController::ImGui(ChartTestWindow& aTestWindow)
 {
-	aTestWindow.ImGui_Lanes(myTrackType, myLaneStates);
+	aTestWindow.ImGui_Lanes(*this);
 	ImGui_Scoring();
 
 	int currentTrackType = static_cast<int>(GetTrackType());
@@ -61,5 +71,5 @@ void ChartController::SetLane(std::uint8_t aLane, bool aState)
 
 void ChartController::Strum()
 {
-	
+	myLastStrum = myLastPlayhead;
 }

@@ -90,40 +90,63 @@ void ChartTestWindow::ImGui()
 #endif
 }
 
-void ChartTestWindow::ImGui_Lanes(ChartTrackType aTrackType, const std::span<const bool>& someStates)
+void ChartTestWindow::ImGui_Lanes(ChartController& aController)
 {
-	auto drawLanes = [&someStates](const std::span<const ImColor>& someColors)
+	auto drawLanes = [&aController](const std::span<const ImColor>& someColors)
 		{
 			for (int i = 0; i < someColors.size(); ++i)
 			{
-				const ImVec4 activeColor = someColors[i];
-
-				ImVec4 neutralColor = activeColor;
-				neutralColor.x *= 0.5f;
-				neutralColor.y *= 0.5f;
-				neutralColor.z *= 0.5f;
-
-				const bool state = someStates[i];
-
 				if (i > 0)
 					ImGui::SameLine();
 
 				ImGui::PushID(i);
-				ImGui::PushStyleColor(ImGuiCol_CheckMark, activeColor);
+				ImVec4 neutralColor = someColors[i];
+				neutralColor.x *= 0.5f;
+				neutralColor.y *= 0.5f;
+				neutralColor.z *= 0.5f;
+
+				ImGui::PushStyleColor(ImGuiCol_CheckMark, (ImVec4)someColors[i]);
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, neutralColor);
 				ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, neutralColor);
 				ImGui::PushStyleColor(ImGuiCol_FrameBgActive, neutralColor);
-				ImGui::RadioButton("", state);
+				ImGui::RadioButton("", aController.GetLaneStates()[i]);
 				ImGui::PopStyleColor(4);
+
 				ImGui::PopID();
 			}
 		};
 
-	switch (aTrackType)
+	auto drawStrum = [&]()
+		{
+			static constexpr std::chrono::microseconds StrumLength = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(300));
+
+			const std::chrono::microseconds timeSinceStrum = aController.GetLastStrum() ? myChartPlayer.GetPlayhead() - aController.GetLastStrum().value() : StrumLength;
+			const float stateFade = 1.f - (static_cast<float>(timeSinceStrum.count()) / static_cast<float>(StrumLength.count()));
+
+			ImGui::PushID("strum");
+			ImVec4 neutralColor;
+			neutralColor.x = stateFade;
+			neutralColor.y = stateFade;
+			neutralColor.z = stateFade;
+			neutralColor.w = 1.f;
+
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, neutralColor);
+			ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, neutralColor);
+			ImGui::PushStyleColor(ImGuiCol_FrameBgActive, neutralColor);
+			bool b = false;
+			ImGui::Checkbox("", &b);
+			ImGui::PopStyleColor(3);
+
+			ImGui::PopID();
+		};
+
+	switch (aController.GetTrackType())
 	{
 		case ChartTrackType::LeadGuitar:
 		case ChartTrackType::RhythmGuitar:
 		case ChartTrackType::BassGuitar:
+			drawStrum();
+			ImGui::SameLine();
 			drawLanes(
 				std::array<ImColor, 5> { NOTE_GREEN, NOTE_RED, NOTE_YELLOW, NOTE_BLUE, NOTE_ORANGE }
 			);

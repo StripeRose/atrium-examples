@@ -21,11 +21,14 @@ public:
 
 	virtual const char* GetName() const = 0;
 
+	std::span<const bool> GetLaneStates() const { return myLaneStates; }
+	const std::optional<std::chrono::microseconds>& GetLastStrum() const { return myLastStrum; }
+
 	ChartTrackType GetTrackType() const { return myTrackType; }
 	ChartTrackDifficulty GetTrackDifficulty() const { return myTrackDifficulty; }
 
-	virtual void HandleChartChange([[maybe_unused]] const ChartData& aData) { }
-	virtual void HandlePlayheadStep([[maybe_unused]] const std::chrono::microseconds& aPrevious, [[maybe_unused]] const std::chrono::microseconds& aNew) { }
+	virtual void HandleChartChange(const ChartData& aData);
+	virtual void HandlePlayheadStep(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew);
 	virtual void HandleInput([[maybe_unused]] const Atrium::Core::InputEvent& anInputEvent) { }
 
 	#if IS_IMGUI_ENABLED
@@ -36,8 +39,6 @@ public:
 	void SetTrackDifficulty(ChartTrackDifficulty aDifficulty);
 
 protected:
-	std::span<const bool> GetLaneStates() const { return myLaneStates; }
-
 	void SetLane(std::uint8_t aLane, bool aState);
 	void Strum();
 
@@ -49,4 +50,6 @@ private:
 	ChartTrackDifficulty myTrackDifficulty;
 
 	std::array<bool, 10> myLaneStates;
+	std::chrono::microseconds myLastPlayhead;
+	std::optional<std::chrono::microseconds> myLastStrum;
 };

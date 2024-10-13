@@ -17,7 +17,7 @@ public:
 
 	void ImGui();
 
-	void ImGui_Lanes(ChartTrackType aTrackType, const std::span<const bool>& someStates);
+	void ImGui_Lanes(ChartController& aController);
 
 private:
 #if IS_IMGUI_ENABLED
