@@ -69,7 +69,7 @@ public:
 	RoseCommon::EventSlot<std::uint32_t, std::uint8_t, std::uint8_t> OnPitchBend;
 	// System Exclusive event
 	// Time delta, Data
-	RoseCommon::EventSlot<std::uint32_t, const std::span<std::uint8_t>&> OnSysEx;
+	RoseCommon::EventSlot<std::uint32_t, const std::span<const std::uint8_t>&> OnSysEx;
 
 	RoseCommon::EventSlot<std::uint32_t, std::uint16_t> OnSequenceNumber;
 	RoseCommon::EventSlot<std::uint32_t, const std::string&> OnText;

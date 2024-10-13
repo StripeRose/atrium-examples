@@ -92,7 +92,7 @@ void ChartTestWindow::ImGui()
 
 void ChartTestWindow::ImGui_Lanes(ChartTrackType aTrackType, const std::span<const bool>& someStates)
 {
-	auto drawLanes = [](const std::span<const ImColor>& someColors, const std::span<const bool>& someStates)
+	auto drawLanes = [&someStates](const std::span<const ImColor>& someColors)
 		{
 			for (int i = 0; i < someColors.size(); ++i)
 			{
@@ -125,8 +125,7 @@ void ChartTestWindow::ImGui_Lanes(ChartTrackType aTrackType, const std::span<con
 		case ChartTrackType::RhythmGuitar:
 		case ChartTrackType::BassGuitar:
 			drawLanes(
-				std::array<ImColor, 5> { NOTE_GREEN, NOTE_RED, NOTE_YELLOW, NOTE_BLUE, NOTE_ORANGE },
-				someStates
+				std::array<ImColor, 5> { NOTE_GREEN, NOTE_RED, NOTE_YELLOW, NOTE_BLUE, NOTE_ORANGE }
 			);
 			break;
 		default:

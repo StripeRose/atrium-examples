@@ -17,7 +17,7 @@ struct ChartTrackLoadData
 {
 	using PerDifficultyFlag = std::bitset<ChartTrackDifficultyCount>;
 	void AddNote(std::chrono::microseconds aTime, std::uint8_t aNote, std::uint8_t aVelocity);
-	void AddSysEx(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData);
+	void AddSysEx(std::chrono::microseconds aTime, const std::span<const std::uint8_t>& someData);
 	void AddLyric(std::chrono::microseconds aTime, const std::string& aText);
 
 	std::map<std::uint8_t, std::chrono::microseconds> myPartialNotes;

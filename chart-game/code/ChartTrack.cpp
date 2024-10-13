@@ -19,7 +19,7 @@ void ChartTrackLoadData::AddNote(std::chrono::microseconds aTime, std::uint8_t a
 		myPartialNotes[aNote] = aTime;
 }
 
-void ChartTrackLoadData::AddSysEx(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData)
+void ChartTrackLoadData::AddSysEx(std::chrono::microseconds aTime, const std::span<const std::uint8_t>& someData)
 {
 	SysExEvents.emplace_back(aTime, std::vector<std::uint8_t>(someData.begin(), someData.end()));
 }

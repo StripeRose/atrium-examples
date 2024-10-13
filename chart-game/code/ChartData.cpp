@@ -146,7 +146,7 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 		}
 	);
 
-	decoder.OnSysEx.Connect(this, [&](std::uint32_t aTick, const std::span<std::uint8_t>& someData)
+	decoder.OnSysEx.Connect(this, [&](std::uint32_t aTick, const std::span<const std::uint8_t>& someData)
 		{
 			currentTrackLoadData.AddSysEx(ticksToTime(aTick), someData);
 		}

@@ -307,7 +307,7 @@ std::uint32_t MidiDecoder::ReadSysExEvent(std::istream& aStream, std::uint32_t a
 	std::unique_ptr<std::uint8_t> data(new std::uint8_t[length]);
 	aStream.read(reinterpret_cast<char*>(data.get()), length);
 
-	OnSysEx.Invoke(aTickCount, std::span<std::uint8_t>(data.get(), aHasEnd ? length - 1 : length));
+	OnSysEx.Invoke(aTickCount, std::span<const std::uint8_t>(data.get(), aHasEnd ? length - 1 : length));
 
 	return readBytes + length;
 }
