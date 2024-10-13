@@ -91,20 +91,22 @@ const ChartNoteRange* ChartGuitarTrack::GetNextNote(ChartTrackDifficulty aDiffic
 	const std::vector<ChartNoteRange>& difficultyNotes = myNoteRanges.at(aDifficulty);
 
 	const ChartNoteRange* closestNote = nullptr;
-	std::chrono::microseconds distance = std::chrono::microseconds::max();
+	std::chrono::microseconds closestDistance = std::chrono::microseconds::max();
 
 	for (const ChartNoteRange& noteRange : difficultyNotes)
 	{
 		if (noteRange.Lane != aLane)
 			continue;
 
-		const std::chrono::microseconds distanceToStart = (noteRange.Start - aTimepoint);
-		if (distanceToStart.count() < 0)
+		if (noteRange.End < aTimepoint)
 			continue;
 
-		if (distanceToStart < distance)
+		const std::chrono::microseconds closestPointInRange = Atrium::Math::Clamp(aTimepoint, noteRange.Start, noteRange.End);
+		const std::chrono::microseconds distance = Atrium::Math::Abs(closestPointInRange - aTimepoint);
+
+		if (distance < closestDistance)
 		{
-			distance = distanceToStart;
+			closestDistance = distance;
 			closestNote = &noteRange;
 		}
 	}
