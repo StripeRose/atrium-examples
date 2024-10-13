@@ -5,27 +5,32 @@ void ChartHumanController::HandleInput(const Atrium::Core::InputEvent& anInputEv
 {
 	using namespace Atrium::Core;
 
-	std::uint8_t lane = 0xFF;
-
 	switch (anInputEvent.Source)
 	{
 		case InputSourceId::Keyboard::Alpha1:
-			lane = 0;
+		case InputSourceId::Keyboard::A:
+			SetLane(0, anInputEvent.Value > 0.5f);
 			break;
 		case InputSourceId::Keyboard::Alpha2:
-			lane = 1;
+		case InputSourceId::Keyboard::S:
+			SetLane(1, anInputEvent.Value > 0.5f);
 			break;
 		case InputSourceId::Keyboard::Alpha3:
-			lane = 2;
+		case InputSourceId::Keyboard::D:
+		case InputSourceId::Keyboard::J:
+			SetLane(2, anInputEvent.Value > 0.5f);
 			break;
 		case InputSourceId::Keyboard::Alpha4:
-			lane = 3;
+		case InputSourceId::Keyboard::K:
+			SetLane(3, anInputEvent.Value > 0.5f);
 			break;
 		case InputSourceId::Keyboard::Alpha5:
-			lane = 4;
+		case InputSourceId::Keyboard::L:
+			SetLane(4, anInputEvent.Value > 0.5f);
+			break;
+
+		case InputSourceId::Keyboard::Spacebar:
+			Strum();
 			break;
 	}
-
-	if (lane != 0xFF)
-		SetLane(lane, anInputEvent.Value > 0.5f);
 }
