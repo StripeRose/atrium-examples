@@ -426,7 +426,7 @@ void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, Atrium::Vector2 aPoi
 	for (const ChartNoteRange& note : difficultyNotes)
 	{
 		const float noteXStart = ImGui_TimeToTrackPosition(aSize.X, note.Start);
-		const float noteXEnd = ImGui_TimeToTrackPosition(aSize.X, note.Start);
+		const float noteXEnd = ImGui_TimeToTrackPosition(aSize.X, note.End);
 
 		if (noteXEnd < -NOTE_RADIUS_SP || (aSize.X + NOTE_RADIUS_SP) < noteXStart)
 			continue;
