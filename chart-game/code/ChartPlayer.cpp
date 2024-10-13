@@ -85,7 +85,7 @@ void ChartPlayer::SetChartData(const ChartData& aData)
 {
 	myChartData = &aData;
 	for (const std::unique_ptr<ChartController>& controller : myControllers)
-		controller->OnChartChange(aData);
+		controller->HandleChartChange(aData);
 }
 
 void ChartPlayer::Stop()
@@ -107,7 +107,7 @@ void ChartPlayer::Update()
 	{
 	case InternalState::Playing:
 		for (const std::unique_ptr<ChartController>& controller : myControllers)
-			controller->OnPlayheadStep(lastUpdatePoint, thisUpdatePoint);
+			controller->HandlePlayheadStep(lastUpdatePoint, thisUpdatePoint);
 		myPlayhead = thisUpdatePoint;
 		break;
 	case InternalState::Paused:

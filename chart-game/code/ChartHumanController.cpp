@@ -5,7 +5,7 @@ void ChartHumanController::HandleInput(const Atrium::Core::InputEvent& anInputEv
 {
 	using namespace Atrium::Core;
 
-	std::optional<int> lane;
+	std::uint8_t lane = 0xFF;
 
 	switch (anInputEvent.Source)
 	{
@@ -26,6 +26,6 @@ void ChartHumanController::HandleInput(const Atrium::Core::InputEvent& anInputEv
 			break;
 	}
 
-	if (lane.has_value())
-		myLaneStates[lane.value()] = anInputEvent.Value > 0.5f;
+	if (lane != 0xFF)
+		SetLane(lane, anInputEvent.Value > 0.5f);
 }

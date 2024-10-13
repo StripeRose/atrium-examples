@@ -42,3 +42,13 @@ void ChartController::SetTrackDifficulty(ChartTrackDifficulty aDifficulty)
 {
 	myTrackDifficulty = aDifficulty;
 }
+
+void ChartController::SetLane(std::uint8_t aLane, bool aState)
+{
+	myLaneStates.at(aLane) = aState;
+}
+
+void ChartController::Strum()
+{
+
+}

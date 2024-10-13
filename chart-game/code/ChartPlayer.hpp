@@ -63,6 +63,6 @@ inline T* ChartPlayer::AddController()
 {
 	std::unique_ptr<ChartController>& newController = myControllers.emplace_back(std::make_unique<T>());
 	if (myChartData)
-		newController->OnChartChange(*myChartData);
+		newController->HandleChartChange(*myChartData);
 	return static_cast<T*>(newController.get());
 }
