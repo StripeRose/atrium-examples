@@ -16,6 +16,7 @@ ChartController::ChartController()
 void ChartController::ImGui(ChartTestWindow& aTestWindow)
 {
 	aTestWindow.ImGui_Lanes(myTrackType, myLaneStates);
+	ImGui_Scoring();
 
 	int currentTrackType = static_cast<int>(GetTrackType());
 	if (ImGui::Combo("Track", &currentTrackType, ChartTrackTypeCombo))
@@ -30,6 +31,16 @@ void ChartController::ImGui(ChartTestWindow& aTestWindow)
 	{
 		SetTrackDifficulty(ChartTrackDifficulty(currentDifficulty));
 	}
+}
+
+void ChartController::ImGui_Scoring()
+{
+	ImGui::Text("Score: %i (x%i)", myScoring.GetScore(), myScoring.GetMultiplier());
+	ImGui::Text("Streak: %i (Max: %i)", myScoring.GetStreak(), myScoring.GetMaximumStreak());
+	ImGui::Text("Accuracy: %.0f%%", myScoring.GetAccuracy() * 100.f);
+
+	if (ImGui::SmallButton("Reset stats"))
+		myScoring.Reset();
 }
 #endif
 
@@ -50,5 +61,5 @@ void ChartController::SetLane(std::uint8_t aLane, bool aState)
 
 void ChartController::Strum()
 {
-
+	
 }

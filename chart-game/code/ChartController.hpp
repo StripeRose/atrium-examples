@@ -2,6 +2,7 @@
 #pragma once
 
 #include "ChartCommonStructures.hpp"
+#include "ChartScoring.hpp"
 
 #include <Core_InputEvent.hpp>
 
@@ -41,6 +42,9 @@ protected:
 	void Strum();
 
 private:
+	void ImGui_Scoring();
+
+	ChartScoring myScoring;
 	ChartTrackType myTrackType;
 	ChartTrackDifficulty myTrackDifficulty;
 
