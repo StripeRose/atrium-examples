@@ -9,6 +9,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <set>
 #include <span>
 #include <string>
 #include <vector>
@@ -37,11 +38,15 @@ public:
 public:
 	virtual ~ChartTrack() = default;
 
+	virtual const std::map<ChartTrackDifficulty, std::vector<ChartNoteRange>>& GetNoteRanges() const = 0;
+
 	virtual const ChartNoteRange* GetClosestNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const = 0;
 
 	virtual const ChartNoteRange* GetNextNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const = 0;
 
 	virtual std::vector<ChartNoteRange> GetNotesInRange(ChartTrackDifficulty aDifficulty, std::chrono::microseconds aStart, std::chrono::microseconds anEnd) const = 0;
+
+	virtual std::uint8_t GetNumberOfLanes() const = 0;
 
 	virtual bool Load(const ChartTrackLoadData& someData) = 0;
 
@@ -81,12 +86,15 @@ public:
 	};
 
 public:
-	const std::map<ChartTrackDifficulty, std::vector<ChartNoteRange>>& GetNoteRanges() const { return myNoteRanges; }
+	const std::map<ChartTrackDifficulty, std::vector<ChartNoteRange>>& GetNoteRanges() const override { return myNoteRanges; }
+
 	const ChartNoteRange* GetClosestNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const override;
 
 	const ChartNoteRange* GetNextNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const override;
 
 	std::vector<ChartNoteRange> GetNotesInRange(ChartTrackDifficulty aDifficulty, std::chrono::microseconds aStart, std::chrono::microseconds anEnd) const override;
+
+	std::uint8_t GetNumberOfLanes() const override { return 5; }
 
 	bool Load(const ChartTrackLoadData& someData) override;
 

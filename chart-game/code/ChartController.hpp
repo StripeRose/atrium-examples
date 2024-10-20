@@ -19,6 +19,8 @@ public:
 	ChartController();
 	virtual ~ChartController() = default;
 
+	virtual bool AllowOpenNotes() const { return false; }
+
 	virtual const char* GetName() const = 0;
 
 	std::span<const bool> GetLaneStates() const { return myLaneStates; }
@@ -35,10 +37,11 @@ public:
 	virtual void ImGui(ChartTestWindow& aTestWindow);
 	#endif
 
-	void SetTrackType(ChartTrackType aType);
-	void SetTrackDifficulty(ChartTrackDifficulty aDifficulty);
+	virtual void SetTrackType(ChartTrackType aType);
+	virtual void SetTrackDifficulty(ChartTrackDifficulty aDifficulty);
 
 protected:
+	void ClearLanes();
 	void SetLane(std::uint8_t aLane, bool aState);
 	void Strum();
 

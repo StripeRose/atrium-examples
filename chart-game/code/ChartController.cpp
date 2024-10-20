@@ -19,6 +19,9 @@ void ChartController::HandleChartChange(const ChartData& /*aData*/)
 
 void ChartController::HandlePlayheadStep(const std::chrono::microseconds& /*aPrevious*/, const std::chrono::microseconds& aNew)
 {
+	if (myLastStrum && myLastStrum.value() > aNew)
+		myLastStrum.reset();
+
 	myLastPlayhead = aNew;
 }
 
@@ -62,6 +65,11 @@ void ChartController::SetTrackType(ChartTrackType aType)
 void ChartController::SetTrackDifficulty(ChartTrackDifficulty aDifficulty)
 {
 	myTrackDifficulty = aDifficulty;
+}
+
+void ChartController::ClearLanes()
+{
+	myLaneStates = {};
 }
 
 void ChartController::SetLane(std::uint8_t aLane, bool aState)
