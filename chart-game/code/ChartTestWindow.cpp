@@ -160,11 +160,14 @@ void ChartTestWindow::ImGui_Lanes(ChartController& aController)
 void ChartTestWindow::ImGui_ChartList()
 {
 	ZoneScoped;
+
 	ImGui::TextUnformatted(mySongsDirectory.string().c_str());
 	ImGui::SameLine();
 
 	if (ImGui::Button("..."))
 	{
+		ZoneScopedN("Waiting for user to pick folder");
+
 		Atrium::Editor::FolderBrowserDialog pickFolder;
 		auto pickedFolder = pickFolder.GetSingle();
 		if (pickedFolder.has_value())
@@ -682,6 +685,7 @@ float ChartTestWindow::ImGui_TimeToTrackPosition(float aTrackWidth, std::chrono:
 void ChartTestWindow::RefreshSongList()
 {
 	ZoneScoped;
+
 	if (!std::filesystem::exists(mySongsDirectory) || !std::filesystem::is_directory(mySongsDirectory))
 		return;
 
@@ -702,6 +706,8 @@ void ChartTestWindow::RefreshSongList()
 
 void ChartTestWindow::LoadSong(const std::filesystem::path& aSong)
 {
+	ZoneScoped;
+
 	const std::unique_ptr<ChartInfo>& chart = myChartInfos.at(aSong);
 	myCurrentSong = chart->GetSongInfo().Title;
 	myChartData.LoadMidi(aSong.parent_path() / "notes.mid");

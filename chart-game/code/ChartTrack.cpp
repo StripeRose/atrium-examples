@@ -57,6 +57,8 @@ std::unique_ptr<ChartTrack> ChartTrack::CreateTrackByName(const std::string& aNa
 
 const ChartNoteRange* ChartGuitarTrack::GetClosestNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const
 {
+	ZoneScoped;
+
 	const std::vector<ChartNoteRange>& difficultyNotes = myNoteRanges.at(aDifficulty);
 
 	const ChartNoteRange* closestNote = nullptr;
@@ -82,6 +84,8 @@ const ChartNoteRange* ChartGuitarTrack::GetClosestNote(ChartTrackDifficulty aDif
 
 const ChartNoteRange* ChartGuitarTrack::GetNextNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const
 {
+	ZoneScoped;
+
 	const std::vector<ChartNoteRange>& difficultyNotes = myNoteRanges.at(aDifficulty);
 
 	const ChartNoteRange* closestNote = nullptr;
@@ -110,6 +114,8 @@ const ChartNoteRange* ChartGuitarTrack::GetNextNote(ChartTrackDifficulty aDiffic
 
 std::vector<ChartNoteRange> ChartGuitarTrack::GetNotesInRange(ChartTrackDifficulty aDifficulty, std::chrono::microseconds aStart, std::chrono::microseconds anEnd) const
 {
+	ZoneScoped;
+
 	const std::vector<ChartNoteRange>& difficultyNotes = myNoteRanges.at(aDifficulty);
 
 	std::vector<ChartNoteRange> notesInRange;
@@ -128,6 +134,8 @@ std::vector<ChartNoteRange> ChartGuitarTrack::GetNotesInRange(ChartTrackDifficul
 
 bool ChartGuitarTrack::Load(const ChartTrackLoadData& someData)
 {
+	ZoneScoped;
+
 	myNoteRanges.clear();
 	myMarkers.clear();
 
@@ -140,6 +148,8 @@ bool ChartGuitarTrack::Load(const ChartTrackLoadData& someData)
 
 bool ChartGuitarTrack::Load_AddNotes(const ChartTrackLoadData& someData)
 {
+	ZoneScoped;
+
 	for (const auto& midiNoteRange : someData.NoteRanges)
 	{
 		const std::uint8_t midiNote = midiNoteRange.first;
@@ -177,6 +187,8 @@ bool ChartGuitarTrack::Load_AddNotes(const ChartTrackLoadData& someData)
 
 bool ChartGuitarTrack::Load_UpdateDefaultNoteTypes()
 {
+	ZoneScoped;
+
 	// Todo: Update default note types based on surrounding notes.
 	// https://github.com/TheNathannator/GuitarGame_ChartFormats/blob/main/doc/FileFormats/.mid/Standard/5-Fret%20Guitar.md#note-mechanics
 
@@ -185,6 +197,8 @@ bool ChartGuitarTrack::Load_UpdateDefaultNoteTypes()
 
 bool ChartGuitarTrack::Load_ProcessSysEx(const ChartTrackLoadData& someData)
 {
+	ZoneScoped;
+
 	struct SysExPerDifficulty
 	{
 		std::optional<std::chrono::microseconds> OpenFlagStart;
@@ -195,6 +209,8 @@ bool ChartGuitarTrack::Load_ProcessSysEx(const ChartTrackLoadData& someData)
 
 	auto handleSysExEvent = [&](const std::chrono::microseconds& aTime, const std::vector<std::uint8_t>& someData) -> bool
 		{
+			ZoneScoped;
+
 			if (someData.size() != 7)
 				return false;
 
@@ -274,6 +290,8 @@ bool ChartGuitarTrack::Load_ProcessSysEx(const ChartTrackLoadData& someData)
 
 bool ChartGuitarTrack::Load_ProcessMarkers(const ChartTrackLoadData& someData)
 {
+	ZoneScoped;
+
 	for (const auto& midiNoteRange : someData.NoteRanges)
 	{
 		const std::uint8_t midiNote = midiNoteRange.first;
@@ -351,6 +369,8 @@ bool ChartGuitarTrack::Load_ProcessMarkers(const ChartTrackLoadData& someData)
 
 void ChartGuitarTrack::Load_ForEachNoteInRange(std::function<void(ChartNoteRange&)> aCallback, const ChartTrackLoadData::PerDifficultyFlag& someDifficulties, std::optional<std::chrono::microseconds> aMinimumRange, std::optional<std::chrono::microseconds> aMaximumRange)
 {
+	ZoneScoped;
+
 	for (auto& noteRanges : myNoteRanges)
 	{
 		if (!someDifficulties.test(static_cast<std::size_t>(noteRanges.first)))

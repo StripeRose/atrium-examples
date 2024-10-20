@@ -9,6 +9,12 @@
 
 void ChartInfo::Load(const std::filesystem::path& aSongIni)
 {
+	ZoneScoped;
+	{
+		const std::string pathString = aSongIni.string();
+		ZoneText(pathString.c_str(), pathString.size());
+	}
+
 	myIni.ReadFromFile(aSongIni);
 	const RoseCommon::Ini::Section& song = myIni.GetSection("song");
 
@@ -84,6 +90,12 @@ const ChartData::TimeSignature ChartData::GetTimeSignatureAt(std::chrono::micros
 
 void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 {
+	ZoneScoped;
+	{
+		const std::string pathString = aMidi.string();
+		ZoneText(pathString.c_str(), pathString.size());
+	}
+
 	myTempos.clear();
 	mySections.clear();
 	myTimeSignatures.clear();
@@ -129,6 +141,7 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 		{
 			if (aText.starts_with("PART "))
 			{
+				ZoneScoped;
 				currentTrack = ChartTrack::CreateTrackByName(aText.substr(5));
 
 				if (currentTrack && myTracks.contains(currentTrack->GetType()))

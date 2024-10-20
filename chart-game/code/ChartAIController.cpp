@@ -3,10 +3,14 @@
 
 #include "ChartData.hpp"
 
+#include "Core_Diagnostics.hpp"
+
 #include "Editor_GUI.hpp"
 
 void ChartAIController::HandleChartChange(const ChartData& aData)
 {
+	ZoneScoped;
+
 	ChartController::HandleChartChange(aData);
 
 	myCurrentChart = &aData;
@@ -51,6 +55,8 @@ void ChartAIController::SetTrackDifficulty(ChartTrackDifficulty aDifficulty)
 
 void ChartAIController::RefreshGrips()
 {
+	ZoneScoped;
+
 	myGrips.clear();
 
 	if (!myCurrentChart)
@@ -76,6 +82,8 @@ void ChartAIController::RefreshGrips()
 
 void ChartAIController::RefreshGrips_AddNote(const ChartNoteRange& aNote)
 {
+	ZoneScoped;
+
 	std::chrono::microseconds duration = aNote.End - aNote.Start;
 	duration = Atrium::Math::Max(duration, std::chrono::microseconds(150'000));
 
@@ -102,6 +110,8 @@ void ChartAIController::RefreshGrips_AddNote(const ChartNoteRange& aNote)
 
 std::pair<std::vector<ChartAIController::ChordGrip>::iterator, std::vector<ChartAIController::ChordGrip>::iterator> ChartAIController::RefreshGrips_CreateOrGetChordBlocksAt(const std::chrono::microseconds& aStart, const std::chrono::microseconds& anEnd)
 {
+	ZoneScoped;
+
 	RefreshGrips_SplitChordAt(aStart);
 	RefreshGrips_SplitChordAt(anEnd);
 
@@ -169,6 +179,8 @@ std::pair<std::vector<ChartAIController::ChordGrip>::iterator, std::vector<Chart
 
 void ChartAIController::RefreshGrips_SplitChordAt(const std::chrono::microseconds& aTimepoint)
 {
+	ZoneScoped;
+
 	auto firstHalf = std::find_if(
 		myGrips.begin(), myGrips.end(),
 		[&aTimepoint](const ChordGrip& aChord)
