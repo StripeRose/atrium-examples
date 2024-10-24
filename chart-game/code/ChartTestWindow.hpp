@@ -22,12 +22,13 @@ public:
 private:
 #if IS_IMGUI_ENABLED
 	void ImGui_ChartList();
+	void ImGui_ChartList_Path();
 
 	void ImGui_Controllers();
 
-	void ImGui_Player();
 	void ImGui_Player_PlayControls();
 
+	void ImGui_Tracks();
 	void ImGui_Track(ChartTrack& aTrack);
 	void ImGui_Track(ChartGuitarTrack& aTrack, Atrium::Vector2 aPoint, Atrium::Vector2 aSize);
 	void ImGui_Track_HitWindow(Atrium::Vector2 aPoint, Atrium::Vector2 aSize);
@@ -50,6 +51,7 @@ private:
 	};
 
 	std::filesystem::path mySongsDirectory;
+	std::array<char, 512> mySongsDirectoryBuffer;
 	std::map<std::filesystem::path, std::unique_ptr<ChartInfo>> myChartInfos;
 
 	std::string myCurrentSong;

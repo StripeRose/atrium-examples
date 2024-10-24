@@ -61,8 +61,16 @@ void ChartTestWindow::ImGui()
 	std::string title = std::format("Chart - {}###ChartTestWindow", myCurrentSong);
 	if (ImGui::Begin(title.c_str()))
 	{
+		ImGui_Player_PlayControls();
+
 		if (ImGui::BeginTabBar("tabs"))
 		{
+			if (ImGui::BeginTabItem("Controllers"))
+			{
+				ImGui_Controllers();
+				ImGui::EndTabItem();
+			}
+
 			if (ImGui::BeginTabItem("Songs"))
 			{
 				ImGui_ChartList();
@@ -76,10 +84,9 @@ void ChartTestWindow::ImGui()
 					activePlayers++;
 			}
 
-			if (ImGui::BeginTabItem("Player"))
+			if (ImGui::BeginTabItem("Tracks"))
 			{
-				ImGui_Controllers();
-				ImGui_Player();
+				ImGui_Tracks();
 				ImGui::EndTabItem();
 			}
 
@@ -161,23 +168,7 @@ void ChartTestWindow::ImGui_ChartList()
 {
 	ZoneScoped;
 
-	ImGui::TextUnformatted(mySongsDirectory.string().c_str());
-	ImGui::SameLine();
-
-	if (ImGui::Button("..."))
-	{
-		ZoneScopedN("Waiting for user to pick folder");
-
-		Atrium::Editor::FolderBrowserDialog pickFolder;
-		auto pickedFolder = pickFolder.GetSingle();
-		if (pickedFolder.has_value())
-			mySongsDirectory = pickedFolder.value();
-	}
-
-	ImGui::NewLine();
-
-	if (ImGui::Button("Refresh"))
-		RefreshSongList();
+	ImGui_ChartList_Path();
 
 	if (ImGui::BeginTable("Song table", 3))
 	{
@@ -231,6 +222,41 @@ void ChartTestWindow::ImGui_ChartList()
 	}
 }
 
+void ChartTestWindow::ImGui_ChartList_Path()
+{
+	if (ImGui::InputText("Songs directory", mySongsDirectoryBuffer.data(), mySongsDirectoryBuffer.size()))
+	{
+		mySongsDirectory = std::filesystem::path(mySongsDirectoryBuffer.data());
+
+		// Refresh the display buffer back in case something was corrected.
+		const std::string pathString = mySongsDirectory.string();
+		std::memcpy(mySongsDirectoryBuffer.data(), pathString.c_str(), pathString.length());
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("..."))
+	{
+		ZoneScopedN("Waiting for user to pick folder");
+
+		Atrium::Editor::FolderBrowserDialog pickFolder;
+		auto pickedFolder = pickFolder.GetSingle();
+		if (pickedFolder.has_value())
+		{
+			mySongsDirectory = pickedFolder.value();
+			RefreshSongList();
+
+			const std::string pathString = mySongsDirectory.string();
+			std::memcpy(mySongsDirectoryBuffer.data(), pathString.c_str(), pathString.length());
+		}
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Refresh"))
+		RefreshSongList();
+}
+
 void ChartTestWindow::ImGui_Controllers()
 {
 	if (ImGui::Button("Add AI"))
@@ -265,10 +291,9 @@ void ChartTestWindow::ImGui_Controllers()
 		myChartPlayer.RemoveController(*removedController);
 }
 
-void ChartTestWindow::ImGui_Player()
+void ChartTestWindow::ImGui_Tracks()
 {
 	ZoneScoped;
-	ImGui_Player_PlayControls();
 
 	{
 		int lookaheadMicroseconds = static_cast<int>(myLookAhead.count());
@@ -293,17 +318,16 @@ void ChartTestWindow::ImGui_Player_PlayControls()
 	const ChartPlayer::State playerState = myChartPlayer.GetState();
 	ImGui::BeginDisabled(playerState == ChartPlayer::State::Seeking);
 
-	ImGui::BeginDisabled(playerState == ChartPlayer::State::Playing);
-	if (ImGui::Button("Play"))
-		myChartPlayer.Play();
-	ImGui::EndDisabled();
-
-	ImGui::SameLine();
-
-	ImGui::BeginDisabled(playerState == ChartPlayer::State::Paused);
-	if (ImGui::Button("Pause"))
-		myChartPlayer.Pause();
-	ImGui::EndDisabled();
+	if (playerState != ChartPlayer::State::Playing)
+	{
+		if (ImGui::Button("Play"))
+			myChartPlayer.Play();
+	}
+	else
+	{
+		if (ImGui::Button("Pause"))
+			myChartPlayer.Pause();
+	}
 
 	ImGui::SameLine();
 
