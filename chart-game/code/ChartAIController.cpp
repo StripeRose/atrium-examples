@@ -36,6 +36,9 @@ void ChartAIController::HandlePlayheadStep(const std::chrono::microseconds& aPre
 	{
 		for (std::uint8_t lane : currentChord->Lanes)
 			SetLane(lane, true);
+
+		if (currentChord->Type == ChartNoteType::Strum && aPrevious < currentChord->Start && currentChord->Start < aNew)
+			Strum();
 	}
 }
 
