@@ -47,6 +47,8 @@ void ExampleGame::HandleLoop()
 
 	ZoneScoped;
 
+	myChartPlayer.Update();
+
 	using namespace Atrium::Core;
 	FrameContext& frameContext = myEngineInstance.GetGraphicsAPI().GetCurrentFrameContext();
 

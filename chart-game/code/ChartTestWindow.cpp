@@ -55,8 +55,6 @@ ChartTestWindow::ChartTestWindow(ChartPlayer& aPlayer)
 
 void ChartTestWindow::ImGui()
 {
-	myChartPlayer.Update();
-
 #if IS_IMGUI_ENABLED
 	std::string title = std::format("Chart - {}###ChartTestWindow", myCurrentSong);
 	if (ImGui::Begin(title.c_str()))
