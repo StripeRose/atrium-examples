@@ -21,12 +21,14 @@ public:
 
 private:
 
+	enum class StrumType { Always, IfNoCombo, Never };
+
 	struct ChordGrip
 	{
 		std::chrono::microseconds Start;
 		std::chrono::microseconds End;
 		std::set<std::uint8_t> Lanes;
-		ChartNoteType Type = ChartNoteType::Tap;
+		StrumType Type = StrumType::Never;
 	};
 
 	void RefreshGrips();

@@ -37,7 +37,8 @@ void ChartAIController::HandlePlayheadStep(const std::chrono::microseconds& aPre
 		for (std::uint8_t lane : currentChord->Lanes)
 			SetLane(lane, true);
 
-		if (currentChord->Type == ChartNoteType::Strum && aPrevious < currentChord->Start && currentChord->Start < aNew)
+		// Todo: Add "NoCombo" strumming, only if the combo has been lost.
+		if (currentChord->Type == StrumType::Always && aPrevious < currentChord->Start && currentChord->Start < aNew)
 			Strum();
 	}
 }
@@ -96,15 +97,19 @@ void ChartAIController::RefreshGrips_AddNote(const ChartNoteRange& aNote)
 
 	for (auto chord = chords.first; chord != chords.second; chord++)
 	{
+		// Only the start of the note needs to be strummed.
+		if (chord == chords.first)
+		{
 		switch (aNote.Type)
 		{
 			case ChartNoteType::Strum:
-				chord->Type = ChartNoteType::Strum;
+					chord->Type = StrumType::Always;
 				break;
 			case ChartNoteType::HOPO:
-				if (chord->Type == ChartNoteType::Tap)
-					chord->Type = ChartNoteType::HOPO;
+					if (chord->Type == StrumType::Never)
+						chord->Type = StrumType::IfNoCombo;
 				break;
+		}
 		}
 
 		chord->Lanes.insert(aNote.Lane);
@@ -201,4 +206,7 @@ void ChartAIController::RefreshGrips_SplitChordAt(const std::chrono::microsecond
 	auto secondHalf = myGrips.emplace(firstHalf + 1, *firstHalf);
 	secondHalf->Start = aTimepoint;
 	(secondHalf - 1)->End = aTimepoint;
+
+	// After the split, the second chord will contain the same notes continued, and so doesn't need to be re-strummed.
+	secondHalf->Type = StrumType::Never;
 }
