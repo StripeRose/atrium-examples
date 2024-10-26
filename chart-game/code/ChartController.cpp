@@ -28,7 +28,7 @@ void ChartController::HandlePlayheadStep(const std::chrono::microseconds& /*aPre
 #if IS_IMGUI_ENABLED
 void ChartController::ImGui(ChartTestWindow& aTestWindow)
 {
-	aTestWindow.ImGui_Lanes(*this);
+	aTestWindow.ImGui_GuitarControlState(*this);
 	ImGui_Scoring();
 
 	int currentTrackType = static_cast<int>(GetTrackType());

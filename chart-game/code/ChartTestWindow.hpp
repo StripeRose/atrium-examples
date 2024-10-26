@@ -10,6 +10,13 @@
 #include <map>
 #include <span>
 
+struct ImGui_ChartDrawParameters
+{
+	Atrium::Vector2 Point;
+	Atrium::Vector2 Size;
+	std::function<float(std::chrono::microseconds aTime)> TimeToPoint;
+};
+
 class ChartTestWindow
 {
 public:
@@ -17,7 +24,13 @@ public:
 
 	void ImGui();
 
-	void ImGui_Lanes(ChartController& aController);
+	void ImGui_GuitarControlState(ChartController& aController);
+
+	#if IS_IMGUI_ENABLED
+	void ImGui_DrawChart(Atrium::Vector2 aSize, std::function<void(const ImGui_ChartDrawParameters&)> aDrawFunction);
+	void ImGui_DrawChart_Lanes(const ImGui_ChartDrawParameters& someParameters, ChartTrackType aTrackType);
+	void ImGui_DrawChart_Note(const ImGui_ChartDrawParameters& someParameters, const ChartNoteRange& aNote, ChartTrackType aTrackType, bool aShowOpens = true);
+	#endif
 
 private:
 #if IS_IMGUI_ENABLED
@@ -27,18 +40,17 @@ private:
 	void ImGui_Controllers();
 
 	void ImGui_Player_PlayControls();
+	void ImGui_Player_LookAheadControl();
 
 	void ImGui_Tracks();
 	void ImGui_Track(ChartTrack& aTrack);
-	void ImGui_Track(ChartGuitarTrack& aTrack, Atrium::Vector2 aPoint, Atrium::Vector2 aSize);
-	void ImGui_Track_HitWindow(Atrium::Vector2 aPoint, Atrium::Vector2 aSize);
-	void ImGui_Track_Beats(Atrium::Vector2 aPoint, Atrium::Vector2 aSize);
+	void ImGui_Track(const ImGui_ChartDrawParameters& someParameters, ChartGuitarTrack& aTrack);
+	void ImGui_DrawChart_HitWindow(const ImGui_ChartDrawParameters& someParameters);
+	void ImGui_DrawChart_Beats(const ImGui_ChartDrawParameters& someParameters);
 	void ImGui_Track_TimeSignatures();
 
-	void ImGui_Track_Note(const ChartNoteRange& aNote, float aStartX, float anEndX, float aLaneY);
-	void ImGui_Track_OpenNote(bool isHOPO, float aNoteStart, float aNoteEnd, float aTopLane, float aBottomLane);
-
-	float ImGui_TimeToTrackPosition(float aTrackWidth, std::chrono::microseconds aTime) const;
+	void ImGui_GuitarNote(const ChartNoteRange& aNote, float aStartX, float anEndX, float aLaneY);
+	void ImGui_GuitarNote_Open(bool isHOPO, float aNoteStart, float aNoteEnd, float aTopLane, float aBottomLane);
 #endif
 
 	void RefreshSongList();
