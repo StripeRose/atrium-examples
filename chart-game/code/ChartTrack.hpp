@@ -46,8 +46,6 @@ public:
 
 	virtual std::vector<ChartNoteRange> GetNotesInRange(ChartTrackDifficulty aDifficulty, std::chrono::microseconds aStart, std::chrono::microseconds anEnd) const = 0;
 
-	virtual std::uint8_t GetNumberOfLanes() const = 0;
-
 	virtual bool Load(const ChartTrackLoadData& someData) = 0;
 
 	ChartTrackType GetType() const { return myType; }
@@ -93,8 +91,6 @@ public:
 	const ChartNoteRange* GetNextNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const override;
 
 	std::vector<ChartNoteRange> GetNotesInRange(ChartTrackDifficulty aDifficulty, std::chrono::microseconds aStart, std::chrono::microseconds anEnd) const override;
-
-	std::uint8_t GetNumberOfLanes() const override { return 5; }
 
 	bool Load(const ChartTrackLoadData& someData) override;
 

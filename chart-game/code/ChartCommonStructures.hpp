@@ -20,6 +20,15 @@ enum class ChartTrackType
 };
 static constexpr unsigned int ChartTrackTypeCount = static_cast<unsigned int>(ChartTrackType::Vocal_Harmony) + 1;
 
+static constexpr std::uint8_t ChartTrackTypeLaneCount[] = {
+	5u,
+	5u,
+	5u,
+	0u,
+	0u,
+	0u
+};
+
 enum class ChartTrackDifficulty
 {
 	Easy,
