@@ -61,6 +61,7 @@ void ChartRenderer::Render(Atrium::Core::FrameContext& aContext, const std::shar
 
 	myLastQuadFlush = 0;
 	myQuadInstanceData.clear();
+	myQuadGroups.clear();
 
 	aContext.SetRenderTargets({ aTarget }, nullptr);
 	aContext.SetViewportAndScissorRect(Atrium::Size(aTarget->GetWidth(), aTarget->GetHeight()));
@@ -82,14 +83,27 @@ void ChartRenderer::Render(Atrium::Core::FrameContext& aContext, const std::shar
 		aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerMaterial, 0, myFretboardTexture);
 		myFretboardMesh->DrawToFrame(aContext);
 
-		aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerMaterial, 0, myAtlas);
-
 		QueueFretboardQuads();
 		RenderController(*controllers.at(i));
-		FlushQuads(aContext);
+		FlushQuads(aContext, i);
 	}
 
 	myQuadInstanceBuffer->SetData<ChartQuadInstance>(myQuadInstanceData);
+
+	aContext.SetPipelineState(myQuadPipelineState);
+	aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerFrame, 0, myCameraMatrices);
+	aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerMaterial, 0, myAtlas);
+	aContext.SetVertexBuffer(myQuadInstanceBuffer, 1);
+	
+	for (const QuadInstanceGroup& group : myQuadGroups)
+	{
+		aContext.SetViewport(controllerRects[group.ControllerIndex]);
+		myQuadMesh->DrawInstancedToFrame(
+			aContext,
+			static_cast<unsigned int>(group.Count),
+			static_cast<unsigned int>(group.Start)
+		);
+	}
 }
 
 void ChartRenderer::SetupQuadResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature, Atrium::Core::GraphicsFormat aColorTargetFormat)
@@ -354,7 +368,7 @@ void ChartRenderer::QueueQuad(const Atrium::Matrix& aTransform, std::optional<At
 	instance.UVMax = Atrium::Vector2(uvRectangle.BottomRight());
 }
 
-void ChartRenderer::FlushQuads(Atrium::Core::FrameContext& aContext)
+void ChartRenderer::FlushQuads(Atrium::Core::FrameContext& aContext, std::size_t anIndex)
 {
 	CONTEXT_ZONE(aContext, "Render quads");
 
@@ -362,11 +376,10 @@ void ChartRenderer::FlushQuads(Atrium::Core::FrameContext& aContext)
 	if (queuedSinceLastFlush == 0)
 		return;
 
-	aContext.SetPipelineState(myQuadPipelineState);
-	aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerFrame, 0, myCameraMatrices);
-
-	aContext.SetVertexBuffer(myQuadInstanceBuffer, 1);
-	myQuadMesh->DrawInstancedToFrame(aContext, static_cast<unsigned int>(queuedSinceLastFlush), static_cast<unsigned int>(myLastQuadFlush));
+	QuadInstanceGroup& instanceGroup = myQuadGroups.emplace_back();
+	instanceGroup.Start = myLastQuadFlush;
+	instanceGroup.Count = queuedSinceLastFlush;
+	instanceGroup.ControllerIndex = anIndex;
 
 	myLastQuadFlush = myQuadInstanceData.size();
 }

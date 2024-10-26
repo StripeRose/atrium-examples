@@ -34,7 +34,7 @@ private:
 	void QueueFretboardQuads();
 
 	void QueueQuad(const Atrium::Matrix& aTransform, std::optional<Atrium::Color32> aColor, std::optional<Atrium::RectangleF> aUVRectangle);
-	void FlushQuads(Atrium::Core::FrameContext& aContext);
+	void FlushQuads(Atrium::Core::FrameContext& aContext, std::size_t anIndex);
 
 	ChartPlayer& myPlayer;
 
@@ -47,6 +47,14 @@ private:
 	std::vector<ChartQuadInstance> myQuadInstanceData;
 	std::shared_ptr<Atrium::Core::GraphicsBuffer> myQuadInstanceBuffer;
 	std::size_t myLastQuadFlush = 0;
+
+	struct QuadInstanceGroup
+	{
+		std::size_t Start = 0;
+		std::size_t Count = 0;
+		std::size_t ControllerIndex = 0;
+	};
+	std::vector<QuadInstanceGroup> myQuadGroups;
 
 	std::shared_ptr<Atrium::Core::GraphicsBuffer> myCameraMatrices;
 
