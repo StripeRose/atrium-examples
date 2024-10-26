@@ -27,6 +27,8 @@ public:
 	std::span<const bool> GetLaneStates() const { return myLaneStates; }
 	const std::optional<std::chrono::microseconds>& GetLastStrum() const { return myLastStrum; }
 
+	const ChartScoring& GetScoring() const { return myScoring; }
+
 	ChartTrackType GetTrackType() const { return myTrackType; }
 	ChartTrackDifficulty GetTrackDifficulty() const { return myTrackDifficulty; }
 
@@ -53,6 +55,12 @@ protected:
 private:
 	void ImGui_Scoring();
 
+	void CheckTapHit(std::uint8_t aLane);
+	void CheckStrumHits();
+	void CheckUnhitNotes();
+
+	std::optional<float> CalculateNoteAccuracy(std::chrono::microseconds aPerfectTimepoint, std::chrono::microseconds aHitTimepoint) const;
+
 	ChartScoring myScoring;
 	ChartTrackType myTrackType;
 	ChartTrackDifficulty myTrackDifficulty;
@@ -61,4 +69,7 @@ private:
 	std::array<bool, 10> myLaneStates;
 	std::chrono::microseconds myLastPlayhead;
 	std::optional<std::chrono::microseconds> myLastStrum;
+
+	// Per lane, the timepoint we've checked hits and misses up until.
+	std::map<std::uint8_t, std::chrono::microseconds> myLastLaneHitCheck;
 };
