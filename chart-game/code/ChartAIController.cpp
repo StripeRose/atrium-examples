@@ -34,9 +34,21 @@ void ChartAIController::HandlePlayheadStep(const std::chrono::microseconds& aPre
 		for (std::uint8_t lane : currentChord->Lanes)
 			SetLane(lane, true);
 
-		// Todo: Add "NoCombo" strumming, only if the combo has been lost.
-		if (currentChord->Type == StrumType::Always && aPrevious < currentChord->Start && currentChord->Start < aNew)
-			Strum();
+		switch (currentChord->Type)
+		{
+			case StrumType::IfNoCombo:
+				if (GetScoring().GetStreak() > 0)
+					break;
+
+				[[fallthrough]];
+
+			case StrumType::Always:
+				if (aPrevious < currentChord->Start && currentChord->Start < aNew)
+					Strum();
+				break;
+			default:
+				break;
+		}
 	}
 }
 
