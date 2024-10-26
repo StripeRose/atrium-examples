@@ -12,8 +12,9 @@ ChartController::ChartController()
 	myLaneStates.fill(false);
 }
 
-void ChartController::HandleChartChange(const ChartData& /*aData*/)
+void ChartController::HandleChartChange(const ChartData& aData)
 {
+	myCurrentChart = &aData;
 	myLastStrum.reset();
 }
 
@@ -70,6 +71,18 @@ void ChartController::SetTrackDifficulty(ChartTrackDifficulty aDifficulty)
 void ChartController::ClearLanes()
 {
 	myLaneStates = {};
+}
+
+const ChartTrack* ChartController::GetTrack() const
+{
+	if (!myCurrentChart)
+		return nullptr;
+
+	const auto trackIterator = myCurrentChart->GetTracks().find(GetTrackType());
+	if (trackIterator == myCurrentChart->GetTracks().end())
+		return nullptr;
+
+	return trackIterator->second.get();
 }
 
 void ChartController::SetLane(std::uint8_t aLane, bool aState)

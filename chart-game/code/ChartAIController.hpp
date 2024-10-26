@@ -47,7 +47,5 @@ private:
 
 	void RefreshGrips_SplitChordAt(const std::chrono::microseconds& aTimepoint);
 
-	const ChartData* myCurrentChart = nullptr;
-
 	std::vector<ChordGrip> myGrips;
 };

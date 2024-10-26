@@ -10,11 +10,7 @@
 
 void ChartAIController::HandleChartChange(const ChartData& aData)
 {
-	ZoneScoped;
-
 	ChartController::HandleChartChange(aData);
-
-	myCurrentChart = &aData;
 
 	RefreshGrips();
 }
@@ -140,17 +136,10 @@ void ChartAIController::RefreshGrips()
 
 	myGrips.clear();
 
-	if (!myCurrentChart)
-		return;
+	const ChartTrack* track = GetTrack();
 
-	const auto trackIterator = myCurrentChart->GetTracks().find(GetTrackType());
-	if (trackIterator == myCurrentChart->GetTracks().end())
-		return;
-
-	const ChartTrack& track = *trackIterator->second;
-
-	const auto difficultyIterator = track.GetNoteRanges().find(GetTrackDifficulty());
-	if (difficultyIterator == track.GetNoteRanges().end())
+	const auto difficultyIterator = track->GetNoteRanges().find(GetTrackDifficulty());
+	if (difficultyIterator == track->GetNoteRanges().end())
 		return;
 
 	const std::vector<ChartNoteRange>& trackNotes = difficultyIterator->second;

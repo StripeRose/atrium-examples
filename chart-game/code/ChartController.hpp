@@ -12,6 +12,7 @@
 
 class ChartData;
 class ChartTestWindow;
+class ChartTrack;
 
 class ChartController
 {
@@ -42,7 +43,11 @@ public:
 
 protected:
 	void ClearLanes();
+
+	const ChartTrack* GetTrack() const;
+
 	void SetLane(std::uint8_t aLane, bool aState);
+
 	void Strum();
 
 private:
@@ -51,6 +56,7 @@ private:
 	ChartScoring myScoring;
 	ChartTrackType myTrackType;
 	ChartTrackDifficulty myTrackDifficulty;
+	const ChartData* myCurrentChart = nullptr;
 
 	std::array<bool, 10> myLaneStates;
 	std::chrono::microseconds myLastPlayhead;
