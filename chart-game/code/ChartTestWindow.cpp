@@ -218,9 +218,11 @@ void ChartTestWindow::ImGui_DrawChart_Lanes(const ImGui_ChartDrawParameters& som
 
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
+	const std::uint8_t laneCount = ChartTrackTypeLaneCount[static_cast<int>(aTrackType)];
+
 	auto drawGuitarLane = [&](std::uint8_t aLane, ImColor aColor) {
 
-		const float laneHeight = (canvasSize.y / 5);
+		const float laneHeight = (canvasSize.y / laneCount);
 		ImVec2 topLeft = canvasTopLeft;
 		topLeft.y += laneHeight * static_cast<int>(aLane);
 		ImVec2 bottomRight = canvasBottomRight;
@@ -259,7 +261,7 @@ void ChartTestWindow::ImGui_DrawChart_Note(const ImGui_ChartDrawParameters& some
 	const std::uint8_t laneCount = ChartTrackTypeLaneCount[static_cast<int>(aTrackType)];
 
 	auto getLaneHeight = [&](std::uint8_t aLane) -> float {
-		const float laneHeight = (someParameters.Size.Y / 5);
+		const float laneHeight = (someParameters.Size.Y / laneCount);
 		const float top = someParameters.Point.Y + laneHeight * aLane;
 		return top + (laneHeight * 0.5f);
 		};
