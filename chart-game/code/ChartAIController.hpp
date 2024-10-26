@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 
+struct ImGui_ChartDrawParameters;
 class ChartAIController : public ChartController
 {
 public:
@@ -16,10 +17,17 @@ public:
 	void HandleChartChange(const ChartData& aData) override;
 	void HandlePlayheadStep(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew) override;
 
+	#if IS_IMGUI_ENABLED
+	void ImGui(ChartTestWindow& aTestWindow) override;
+	#endif
+
 	void SetTrackType(ChartTrackType aType) override;
 	void SetTrackDifficulty(ChartTrackDifficulty aDifficulty) override;
 
 private:
+	#if IS_IMGUI_ENABLED
+	void ImGui_DrawGrips(ChartTestWindow& aTestWindow, const ImGui_ChartDrawParameters& someParameters);
+	#endif
 
 	enum class StrumType { Always, IfNoCombo, Never };
 

@@ -2,6 +2,7 @@
 #include "ChartAIController.hpp"
 
 #include "ChartData.hpp"
+#include "ChartTestWindow.hpp"
 
 #include "Core_Diagnostics.hpp"
 
@@ -43,6 +44,26 @@ void ChartAIController::HandlePlayheadStep(const std::chrono::microseconds& aPre
 	}
 }
 
+#if IS_IMGUI_ENABLED
+void ChartAIController::ImGui(ChartTestWindow& aTestWindow)
+{
+	ChartController::ImGui(aTestWindow);
+
+	if (ImGui::TreeNode("Grips"))
+	{
+		aTestWindow.ImGui_DrawChart({ 0, 150.f },
+			[&](const ImGui_ChartDrawParameters& someParameters)
+			{
+				aTestWindow.ImGui_DrawChart_Lanes(someParameters, GetTrackType());
+
+				ImGui_DrawGrips(aTestWindow, someParameters);
+			});
+
+		ImGui::TreePop();
+	}
+}
+#endif
+
 void ChartAIController::SetTrackType(ChartTrackType aType)
 {
 	ChartController::SetTrackType(aType);
@@ -55,6 +76,60 @@ void ChartAIController::SetTrackDifficulty(ChartTrackDifficulty aDifficulty)
 	ChartController::SetTrackDifficulty(aDifficulty);
 
 	RefreshGrips();
+}
+
+void ChartAIController::ImGui_DrawGrips(ChartTestWindow&, const ImGui_ChartDrawParameters& someParameters)
+{
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	for (const ChordGrip& grip : myGrips)
+	{
+		const float gripXStart = someParameters.Point.X + someParameters.TimeToPoint(grip.Start);
+		const float gripXEnd = someParameters.Point.X + someParameters.TimeToPoint(grip.End);
+
+		if (gripXEnd < (someParameters.Point.X) || (someParameters.Point.X + someParameters.Size.X) < gripXStart)
+			continue;
+
+		const std::uint8_t laneCount = ChartTrackTypeLaneCount[static_cast<int>(GetTrackType())];
+
+		const float laneHeight = (someParameters.Size.Y / laneCount);
+
+		for (std::uint8_t lane : grip.Lanes)
+		{
+			const float top = someParameters.Point.Y + laneHeight * lane;
+			const float bottom = top + laneHeight;
+
+			drawList->AddRectFilled(
+				{ gripXStart, top },
+				{ gripXEnd, bottom },
+				0x80FFFFFF
+			);
+		}
+
+		ImU32 strumColor = 0xFFFFFFFF;
+		float width = 5.f;
+		switch (grip.Type)
+		{
+			case StrumType::Always:
+				strumColor = IM_COL32(0xAA, 0xDD, 0xFF, 0xFF);
+				width = 7.f;
+				break;
+			case StrumType::IfNoCombo:
+				strumColor = IM_COL32(0xFF, 0xCC, 0xAA, 0xFF);
+				width = 5.f;
+				break;
+			case StrumType::Never:
+				strumColor = IM_COL32(0xFF, 0xFF, 0xFF, 0x80);
+				width = 2.f;
+				break;
+		}
+
+		drawList->AddRectFilled(
+			{ gripXStart, someParameters.Point.Y },
+			{ gripXStart + width, someParameters.Point.Y + someParameters.Size.Y },
+			strumColor
+		);
+	}
 }
 
 void ChartAIController::RefreshGrips()
