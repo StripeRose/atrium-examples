@@ -96,7 +96,7 @@ const ChartNoteRange* ChartGuitarTrack::GetNextNote(ChartTrackDifficulty aDiffic
 		if (noteRange.Lane != aLane)
 			continue;
 
-		if (noteRange.End < aTimepoint)
+		if (noteRange.Start < aTimepoint)
 			continue;
 
 		const std::chrono::microseconds closestPointInRange = Atrium::Math::Clamp(aTimepoint, noteRange.Start, noteRange.End);
