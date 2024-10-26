@@ -78,6 +78,7 @@ void ChartAIController::SetTrackDifficulty(ChartTrackDifficulty aDifficulty)
 	RefreshGrips();
 }
 
+#if IS_IMGUI_ENABLED
 void ChartAIController::ImGui_DrawGrips(ChartTestWindow&, const ImGui_ChartDrawParameters& someParameters)
 {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -131,6 +132,7 @@ void ChartAIController::ImGui_DrawGrips(ChartTestWindow&, const ImGui_ChartDrawP
 		);
 	}
 }
+#endif
 
 void ChartAIController::RefreshGrips()
 {
