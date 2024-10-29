@@ -31,10 +31,17 @@ private:
 	void RenderController(ChartController& aController);
 	void RenderNotes(ChartController& aController, const ChartGuitarTrack& aTrack);
 
+	void RenderNote_Guitar(const ChartNoteRange& aNote);
+	void RenderNote_GuitarOpen(const ChartNoteRange& aNote);
+	void RenderNote_GuitarSustain(const ChartNoteRange& aNote);
+	void RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote);
+
 	void QueueFretboardQuads();
 
 	void QueueQuad(const Atrium::Matrix& aTransform, std::optional<Atrium::Color32> aColor, std::optional<Atrium::RectangleF> aUVRectangle);
 	void FlushQuads(Atrium::Core::FrameContext& aContext, std::size_t anIndex);
+
+	float TimeToPositionOffset(std::chrono::microseconds aTime) const;
 
 	ChartPlayer& myPlayer;
 

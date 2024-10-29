@@ -8,6 +8,8 @@
 
 #include "FretAtlas.hpp"
 
+#define LOOKAHEAD std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(3))
+
 struct ModelViewProjection
 {
 	Atrium::Matrix Model;
@@ -259,74 +261,131 @@ void ChartRenderer::RenderController(ChartController& aController)
 
 void ChartRenderer::RenderNotes(ChartController& aController, const ChartGuitarTrack& aTrack)
 {
-	auto timeToTrackPosition =
-		[&](std::chrono::microseconds aTime) -> float
-		{
-			constexpr std::chrono::microseconds LookAhead(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(2)));
-			const auto relativeToPlayhead = aTime - myPlayer.GetPlayhead();
-			return static_cast<float>(relativeToPlayhead.count()) / static_cast<float>(LookAhead.count());
-		};
-
 	const std::vector<ChartNoteRange>& difficultyNotes = aTrack.GetNoteRanges().at(aController.GetTrackDifficulty());
 	for (const ChartNoteRange& note : difficultyNotes)
 	{
-		const float noteStartFretboardFraction = timeToTrackPosition(note.Start);
-		const float noteEndFretboardFraction = timeToTrackPosition(note.End);
-
-		if (noteEndFretboardFraction < -0.5f || noteStartFretboardFraction > 2.f)
-			continue;
-
-		Atrium::RectangleF noteFill = FretAtlas::Note_Color;
-		Atrium::RectangleF noteShell = FretAtlas::Note_Shell_Strum;
-
-		switch (note.Type)
-		{
-			case ChartNoteType::Strum:
-				break;
-			case ChartNoteType::Tap:
-				noteFill = FretAtlas::Note_Color_Tap;
-				noteShell = FretAtlas::Note_Shell_Tap;
-				break;
-			case ChartNoteType::HOPO:
-				noteShell = FretAtlas::Note_Shell_HOPO;
-				break;
-		}
-
-		Atrium::Color32 noteColor;
-		switch (note.Lane)
-		{
-			case 0:
-				noteColor = NoteColor::Green;
-				break;
-			case 1:
-				noteColor = NoteColor::Red;
-				break;
-			case 2:
-				noteColor = NoteColor::Yellow;
-				break;
-			case 3:
-				noteColor = NoteColor::Blue;
-				break;
-			case 4:
-				noteColor = NoteColor::Orange;
-				break;
-		}
-
-		Atrium::Matrix noteTransform
-			= FretboardMatrices::Targets[note.Lane]
-			* Atrium::Matrix::CreateTranslation(
-				0,
-				0,
-				Atrium::Math::Lerp<float>(
-					0,
-					FretboardLength - FretboardMatrices::TargetOffset,
-					noteStartFretboardFraction
-				)
-			);
-
-		QueueQuad(noteTransform, noteColor, noteFill);
-		QueueQuad(noteTransform, {}, noteShell);
+		if (note.CanBeOpen && aController.AllowOpenNotes())
+			RenderNote_GuitarOpenSustain(note);
+		else
+			RenderNote_GuitarSustain(note);
 	}
+
+	for (auto note = difficultyNotes.crbegin(); note != difficultyNotes.crend(); ++note)
+	{
+		if (note->CanBeOpen && aController.AllowOpenNotes())
+			RenderNote_GuitarOpen(*note);
+		else
+			RenderNote_Guitar(*note);
+	}
+}
+
+void ChartRenderer::RenderNote_Guitar(const ChartNoteRange& aNote)
+{
+	const float notePosition = TimeToPositionOffset(aNote.Start);
+
+	if (notePosition < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < notePosition)
+		return;
+
+	Atrium::RectangleF noteFill = FretAtlas::Note_Color;
+	Atrium::RectangleF noteShell = FretAtlas::Note_Shell_Strum;
+
+	switch (aNote.Type)
+	{
+		case ChartNoteType::Strum:
+			break;
+		case ChartNoteType::Tap:
+			noteFill = FretAtlas::Note_Color_Tap;
+			noteShell = FretAtlas::Note_Shell_Tap;
+			break;
+		case ChartNoteType::HOPO:
+			noteShell = FretAtlas::Note_Shell_HOPO;
+			break;
+	}
+
+	Atrium::Color32 noteColor;
+	switch (aNote.Lane)
+	{
+		case 0:
+			noteColor = NoteColor::Green;
+			break;
+		case 1:
+			noteColor = NoteColor::Red;
+			break;
+		case 2:
+			noteColor = NoteColor::Yellow;
+			break;
+		case 3:
+			noteColor = NoteColor::Blue;
+			break;
+		case 4:
+			noteColor = NoteColor::Orange;
+			break;
+	}
+
+	Atrium::Matrix noteTransform = FretboardMatrices::Targets[aNote.Lane];
+
+	noteTransform.SetTranslation4(
+		noteTransform.GetTranslation4() +
+		Atrium::Vector4::UnitZ() * notePosition
+	);
+
+	QueueQuad(noteTransform, noteColor, noteFill);
+	QueueQuad(noteTransform, {}, noteShell);
+}
+
+void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
+{
+	aNote;
+}
+
+void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote)
+{
+	const float sustainStart = TimeToPositionOffset(aNote.Start);
+	const float sustainEnd = TimeToPositionOffset(aNote.End);
+
+	// Todo: Early out if the sustain is too short and won't be visible anyway.
+
+	if (sustainEnd < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < sustainStart)
+		return;
+
+	Atrium::Color32 noteColor;
+	switch (aNote.Lane)
+	{
+		case 0:
+			noteColor = NoteColor::Green;
+			break;
+		case 1:
+			noteColor = NoteColor::Red;
+			break;
+		case 2:
+			noteColor = NoteColor::Yellow;
+			break;
+		case 3:
+			noteColor = NoteColor::Blue;
+			break;
+		case 4:
+			noteColor = NoteColor::Orange;
+			break;
+	}
+
+	Atrium::Matrix sustainTransform
+		= FretboardMatrices::Sustain_Roots[aNote.Lane]
+		* Atrium::Matrix::CreateScale(1, 1, sustainEnd - sustainStart)
+		;
+
+	sustainTransform.SetTranslation4(
+		sustainTransform.GetTranslation4() +
+		Atrium::Vector4::UnitZ() * (FretboardMatrices::TargetOffset + 0.04f + sustainStart)
+	);
+
+	QueueQuad(
+		sustainTransform
+		, noteColor, FretAtlas::Note_Sustain_0);
+}
+
+void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
+{
+	aNote;
 }
 
 void ChartRenderer::QueueFretboardQuads()
@@ -382,4 +441,15 @@ void ChartRenderer::FlushQuads(Atrium::Core::FrameContext& aContext, std::size_t
 	instanceGroup.ControllerIndex = anIndex;
 
 	myLastQuadFlush = myQuadInstanceData.size();
+}
+
+float ChartRenderer::TimeToPositionOffset(std::chrono::microseconds aTime) const
+{
+	const auto relativeToPlayhead = aTime - myPlayer.GetPlayhead();
+	const float playheadToLookahead = static_cast<float>(relativeToPlayhead.count()) / static_cast<float>(LOOKAHEAD.count());
+
+	return Atrium::Math::Lerp(
+		0.f,
+		FretboardLength - FretboardMatrices::TargetOffset,
+		playheadToLookahead);
 }

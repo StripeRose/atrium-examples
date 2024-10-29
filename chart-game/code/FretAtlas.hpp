@@ -26,12 +26,25 @@ namespace FretAtlas
 
 	constexpr Atrium::RectangleF White = ToUV(256, 330, 4, 4);
 
+	constexpr Atrium::RectangleF BeatBar = ToUV(0, 536, 1024, 16);
+	constexpr Atrium::RectangleF Sidebar_L = ToUV(652, 0, 64, 512);
+	constexpr Atrium::RectangleF Sidebar_R = ToUV(716, 0, -64, 512);
+
 	constexpr Atrium::RectangleF Note_Shell_Strum = ToUV(0, 256, 128, 64);
 	constexpr Atrium::RectangleF Note_Shell_Tap = ToUV(0, 192, 128, 64);
 	constexpr Atrium::RectangleF Note_Shell_HOPO = ToUV(0, 128, 128, 64);
+	constexpr Atrium::RectangleF Note_Shell_Open = ToUV(256, 256, 396, 64);
 
 	constexpr Atrium::RectangleF Note_Color = ToUV(128, 256, 128, 64);
 	constexpr Atrium::RectangleF Note_Color_Tap = ToUV(128, 192, 128, 64);
+	constexpr Atrium::RectangleF Note_Color_Open = ToUV(256, 192, 396, 64);
+
+	constexpr Atrium::RectangleF Note_Sustain_1 = ToUV(292, 405, 73, 40);
+	constexpr Atrium::RectangleF Note_Sustain_0 = ToUV(292, 445, 73, 30);
+	constexpr Atrium::RectangleF Note_Sustain_Missed_1 = ToUV(365, 405, 73, 40);
+	constexpr Atrium::RectangleF Note_Sustain_Missed_0 = ToUV(365, 445, 73, 30);
+	constexpr Atrium::RectangleF Note_Sustain_Open_1 = ToUV(0, 320, 512, 80);
+	constexpr Atrium::RectangleF Note_Sustain_Open_0 = ToUV(0, 400, 512, 5);
 
 	constexpr Atrium::RectangleF Note_Target_L2_Head = ToUV(0, 0, 128, 64);
 	constexpr Atrium::RectangleF Note_Target_L2_Base = ToUV(0, 64, 128, 64);
@@ -64,26 +77,19 @@ namespace FretboardMatrices
 		(-0.4803f) + (((0.4803f * 2) / 6) * 5.f)
 	};
 
-	constexpr Atrium::Matrix String_Translations[] = {
-		Atrium::Matrix::CreateTranslation(String_Offset[0], 0, 0),
-		Atrium::Matrix::CreateTranslation(String_Offset[1], 0, 0),
-		Atrium::Matrix::CreateTranslation(String_Offset[2], 0, 0),
-		Atrium::Matrix::CreateTranslation(String_Offset[3], 0, 0),
-		Atrium::Matrix::CreateTranslation(String_Offset[4], 0, 0)
-	};
-
 	constexpr Atrium::Matrix String_Base
 		= Atrium::Matrix::CreateTranslation(-0.5f, 0, 0)
+		* Atrium::Matrix::CreateRotationY(Atrium::Math::Pi)
 		* Atrium::Matrix::CreateScale(0.120075f, 1.9212f, 0)
 		* Atrium::Matrix::CreateRotationX(Atrium::Math::HalfPi)
 		;
 
 	constexpr Atrium::Matrix Strings[] = {
-		String_Base * String_Translations[0],
-		String_Base * String_Translations[1],
-		String_Base * String_Translations[2],
-		String_Base * String_Translations[3],
-		String_Base * String_Translations[4]
+		String_Base * Atrium::Matrix::CreateTranslation(String_Offset[0], 0, 0),
+		String_Base * Atrium::Matrix::CreateTranslation(String_Offset[1], 0, 0),
+		String_Base * Atrium::Matrix::CreateTranslation(String_Offset[2], 0, 0),
+		String_Base * Atrium::Matrix::CreateTranslation(String_Offset[3], 0, 0),
+		String_Base * Atrium::Matrix::CreateTranslation(String_Offset[4], 0, 0)
 	};
 
 	constexpr Atrium::Matrix FaceCamera(Atrium::Vector3 aPosition, Atrium::Vector2 aSize = { 1, 1 }, Atrium::Vector2 anAnchor = { 0.5f, 0.5f })
@@ -105,5 +111,20 @@ namespace FretboardMatrices
 		FaceCamera({ String_Offset[2], 0, TargetOffset }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
 		FaceCamera({ String_Offset[3], 0, TargetOffset }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
 		FaceCamera({ String_Offset[4], 0, TargetOffset }, { 0.18f, 0.09f }, { 0.5f, 0.f })
+	};
+
+	constexpr Atrium::Matrix Sustain_Base
+		= Atrium::Matrix::CreateTranslation(-0.5f, 0, 0)
+		* Atrium::Matrix::CreateRotationY(Atrium::Math::Pi)
+		* Atrium::Matrix::CreateScale(0.18f, 1.f, 0)
+		* Atrium::Matrix::CreateRotationX(Atrium::Math::HalfPi)
+		;
+
+	constexpr Atrium::Matrix Sustain_Roots[] = {
+		Sustain_Base * Atrium::Matrix::CreateTranslation(String_Offset[0], 0, 0),
+		Sustain_Base * Atrium::Matrix::CreateTranslation(String_Offset[1], 0, 0),
+		Sustain_Base * Atrium::Matrix::CreateTranslation(String_Offset[2], 0, 0),
+		Sustain_Base * Atrium::Matrix::CreateTranslation(String_Offset[3], 0, 0),
+		Sustain_Base * Atrium::Matrix::CreateTranslation(String_Offset[4], 0, 0)
 	};
 }
