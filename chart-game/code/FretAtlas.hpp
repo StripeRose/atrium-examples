@@ -12,6 +12,8 @@ namespace NoteColor
 	constexpr Atrium::Color32 Yellow(0xFFD6D30D);
 	constexpr Atrium::Color32 Blue(0xFF106ED0);
 	constexpr Atrium::Color32 Orange(0xFFEF9612);
+
+	constexpr Atrium::Color32 Open(0xFF9225C5);
 }
 
 namespace FretAtlas
@@ -113,6 +115,10 @@ namespace FretboardMatrices
 		FaceCamera({ String_Offset[4], 0, TargetOffset }, { 0.18f, 0.09f }, { 0.5f, 0.f })
 	};
 
+	constexpr Atrium::Matrix OpenTarget =
+		FaceCamera({ String_Offset[2], 0, TargetOffset }, { 4*0.18f, 4*0.03f }, { 0.5f, 0.f })
+		;
+
 	constexpr Atrium::Matrix Sustain_Base
 		= Atrium::Matrix::CreateTranslation(-0.5f, 0, 0)
 		* Atrium::Matrix::CreateRotationY(Atrium::Math::Pi)
@@ -127,4 +133,12 @@ namespace FretboardMatrices
 		Sustain_Base * Atrium::Matrix::CreateTranslation(String_Offset[3], 0, 0),
 		Sustain_Base * Atrium::Matrix::CreateTranslation(String_Offset[4], 0, 0)
 	};
+
+	constexpr Atrium::Matrix Sustain_Open
+		= Atrium::Matrix::CreateTranslation(-0.5f, 0, 0)
+		* Atrium::Matrix::CreateRotationY(Atrium::Math::Pi)
+		* Atrium::Matrix::CreateScale(4*0.18f, 1.f, 0)
+		* Atrium::Matrix::CreateRotationX(Atrium::Math::HalfPi)
+		* Atrium::Matrix::CreateTranslation(String_Offset[2], 0, 0)
+		;
 }

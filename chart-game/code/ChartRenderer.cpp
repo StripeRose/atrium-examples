@@ -335,7 +335,36 @@ void ChartRenderer::RenderNote_Guitar(const ChartNoteRange& aNote)
 
 void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
 {
-	aNote;
+	const float notePosition = TimeToPositionOffset(aNote.Start);
+
+	if (notePosition < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < notePosition)
+		return;
+
+	Atrium::RectangleF noteFill = FretAtlas::Note_Color;
+	Atrium::RectangleF noteShell = FretAtlas::Note_Shell_Strum;
+
+	switch (aNote.Type)
+	{
+		case ChartNoteType::Strum:
+			break;
+		case ChartNoteType::Tap:
+			noteFill = FretAtlas::Note_Color_Tap;
+			noteShell = FretAtlas::Note_Shell_Tap;
+			break;
+		case ChartNoteType::HOPO:
+			noteShell = FretAtlas::Note_Shell_HOPO;
+			break;
+	}
+
+	Atrium::Matrix noteTransform = FretboardMatrices::OpenTarget;
+
+	noteTransform.SetTranslation4(
+		noteTransform.GetTranslation4() +
+		Atrium::Vector4::UnitZ() * notePosition
+	);
+
+	QueueQuad(noteTransform, NoteColor::Open, FretAtlas::Note_Color_Open);
+	QueueQuad(noteTransform, {}, FretAtlas::Note_Shell_Open);
 }
 
 void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote)
@@ -378,14 +407,30 @@ void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * (FretboardMatrices::TargetOffset + 0.04f + sustainStart)
 	);
 
-	QueueQuad(
-		sustainTransform
-		, noteColor, FretAtlas::Note_Sustain_0);
+	QueueQuad(sustainTransform, noteColor, FretAtlas::Note_Sustain_0);
 }
 
 void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
 {
-	aNote;
+	const float sustainStart = TimeToPositionOffset(aNote.Start);
+	const float sustainEnd = TimeToPositionOffset(aNote.End);
+
+	// Todo: Early out if the sustain is too short and won't be visible anyway.
+
+	if (sustainEnd < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < sustainStart)
+		return;
+
+	Atrium::Matrix sustainTransform
+		= FretboardMatrices::Sustain_Open
+		* Atrium::Matrix::CreateScale(1, 1, sustainEnd - sustainStart)
+		;
+
+	sustainTransform.SetTranslation4(
+		sustainTransform.GetTranslation4() +
+		Atrium::Vector4::UnitZ() * (FretboardMatrices::TargetOffset + 0.04f + sustainStart)
+	);
+
+	QueueQuad(sustainTransform, NoteColor::Open, FretAtlas::Note_Sustain_Open_0);
 }
 
 void ChartRenderer::QueueFretboardQuads()
