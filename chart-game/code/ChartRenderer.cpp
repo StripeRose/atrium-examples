@@ -25,7 +25,6 @@ void ChartRenderer::SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atri
 {
 	ZoneScoped;
 
-	myAtlas = aGraphicsAPI.GetResourceManager().LoadTexture("fretatlas.dds");
 	myFretboardTexture = aGraphicsAPI.GetResourceManager().LoadTexture("fretboard.dds");
 
 	std::unique_ptr<Atrium::Core::RootSignatureBuilder> builder = aGraphicsAPI.GetResourceManager().CreateRootSignature();
@@ -52,7 +51,13 @@ void ChartRenderer::SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atri
 
 	std::shared_ptr<Atrium::Core::RootSignature> rootSignature = builder->Finalize();
 
-	SetupQuadResources(aGraphicsAPI, rootSignature, aColorTargetFormat);
+	myQuadRenderer.Setup(
+		aGraphicsAPI,
+		rootSignature,
+		aColorTargetFormat,
+		aGraphicsAPI.GetResourceManager().LoadTexture("fretatlas.dds")
+	);
+
 	SetupFretboardResources(aGraphicsAPI, rootSignature, aColorTargetFormat);
 }
 
@@ -60,10 +65,6 @@ void ChartRenderer::Render(Atrium::Core::FrameContext& aContext, const std::shar
 {
 	ZoneScoped;
 	CONTEXT_ZONE(aContext, "Chart");
-
-	myLastQuadFlush = 0;
-	myQuadInstanceData.clear();
-	myQuadGroups.clear();
 
 	aContext.SetRenderTargets({ aTarget }, nullptr);
 	aContext.SetViewportAndScissorRect(Atrium::Size(aTarget->GetWidth(), aTarget->GetHeight()));
@@ -87,57 +88,16 @@ void ChartRenderer::Render(Atrium::Core::FrameContext& aContext, const std::shar
 
 		QueueFretboardQuads();
 		RenderController(*controllers.at(i));
-		FlushQuads(aContext, i);
+		myQuadRenderer.Flush(i);
 	}
 
-	myQuadInstanceBuffer->SetData<ChartQuadInstance>(myQuadInstanceData);
-
-	aContext.SetPipelineState(myQuadPipelineState);
-	aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerFrame, 0, myCameraMatrices);
-	aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerMaterial, 0, myAtlas);
-	aContext.SetVertexBuffer(myQuadInstanceBuffer, 1);
-	
-	for (const QuadInstanceGroup& group : myQuadGroups)
-	{
-		aContext.SetViewport(controllerRects[group.ControllerIndex]);
-		myQuadMesh->DrawInstancedToFrame(
-			aContext,
-			static_cast<unsigned int>(group.Count),
-			static_cast<unsigned int>(group.Start)
-		);
-	}
-}
-
-void ChartRenderer::SetupQuadResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature, Atrium::Core::GraphicsFormat aColorTargetFormat)
-{
-	ZoneScoped;
-
-	myQuadMesh = CreateQuadMesh(aGraphicsAPI);
-	myQuadMesh->SetName(L"Quad");
-
-	Atrium::Core::PipelineStateDescription pipelineDescription;
-	pipelineDescription.RootSignature = aRootSignature;
-	pipelineDescription.InputLayout = ChartQuadVertex::GetInputLayout();
-	const std::filesystem::path shaderPath = "ChartQuad.hlsl";
-	pipelineDescription.VertexShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, Atrium::Core::Shader::Type::Vertex, "vertexShader");
-	pipelineDescription.PixelShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, Atrium::Core::Shader::Type::Pixel, "pixelShader");
-	pipelineDescription.OutputFormats = { aColorTargetFormat };
-	pipelineDescription.BlendMode.BlendFactors[0].Enabled = true;
-
-	myQuadPipelineState = aGraphicsAPI.GetResourceManager().CreatePipelineState(pipelineDescription);
-
-	struct CameraMatrices
-	{
-		Atrium::Matrix View;
-		Atrium::Matrix Projection;
-	} cameraMatrices;
-	cameraMatrices.View = FretboardMatrices::CameraViewMatrix;
-	cameraMatrices.Projection = FretboardMatrices::CameraProjectionMatrix;
-
-	myCameraMatrices = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(Atrium::Core::GraphicsBuffer::Target::Constant, 1, sizeof(CameraMatrices));
-	myCameraMatrices->SetData(&cameraMatrices, sizeof(CameraMatrices));
-
-	myQuadInstanceBuffer = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(Atrium::Core::GraphicsBuffer::Target::Vertex, 512, sizeof(ChartQuadInstance));
+	myQuadRenderer.Render(
+		aContext,
+		[&](std::size_t aGroup)
+		{
+			aContext.SetViewport(controllerRects[aGroup]);
+		}
+	);
 }
 
 void ChartRenderer::SetupFretboardResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature, Atrium::Core::GraphicsFormat aColorTargetFormat)
@@ -329,8 +289,8 @@ void ChartRenderer::RenderNote_Guitar(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * notePosition
 	);
 
-	QueueQuad(noteTransform, noteColor, noteFill);
-	QueueQuad(noteTransform, {}, noteShell);
+	myQuadRenderer.Queue(noteTransform, noteColor, noteFill);
+	myQuadRenderer.Queue(noteTransform, {}, noteShell);
 }
 
 void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
@@ -363,8 +323,8 @@ void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * notePosition
 	);
 
-	QueueQuad(noteTransform, NoteColor::Open, FretAtlas::Note_Color_Open);
-	QueueQuad(noteTransform, {}, FretAtlas::Note_Shell_Open);
+	myQuadRenderer.Queue(noteTransform, NoteColor::Open, FretAtlas::Note_Color_Open);
+	myQuadRenderer.Queue(noteTransform, {}, FretAtlas::Note_Shell_Open);
 }
 
 void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote)
@@ -407,7 +367,7 @@ void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * (FretboardMatrices::TargetOffset + 0.04f + sustainStart)
 	);
 
-	QueueQuad(sustainTransform, noteColor, FretAtlas::Note_Sustain_0);
+	myQuadRenderer.Queue(sustainTransform, noteColor, FretAtlas::Note_Sustain_0);
 }
 
 void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
@@ -430,62 +390,30 @@ void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * (FretboardMatrices::TargetOffset + 0.04f + sustainStart)
 	);
 
-	QueueQuad(sustainTransform, NoteColor::Open, FretAtlas::Note_Sustain_Open_0);
+	myQuadRenderer.Queue(sustainTransform, NoteColor::Open, FretAtlas::Note_Sustain_Open_0);
 }
 
 void ChartRenderer::QueueFretboardQuads()
 {
 	// Lane 1
-	QueueQuad(FretboardMatrices::Targets[0], {}, FretAtlas::Note_Target_L2_Base);
-	QueueQuad(FretboardMatrices::Targets[0], NoteColor::Green, FretAtlas::Note_Target_L2_Head);
+	myQuadRenderer.Queue(FretboardMatrices::Targets[0], {}, FretAtlas::Note_Target_L2_Base);
+	myQuadRenderer.Queue(FretboardMatrices::Targets[0], NoteColor::Green, FretAtlas::Note_Target_L2_Head);
 
 	// Lane 2
-	QueueQuad(FretboardMatrices::Targets[1], {}, FretAtlas::Note_Target_L1_Base);
-	QueueQuad(FretboardMatrices::Targets[1], NoteColor::Red, FretAtlas::Note_Target_L1_Head);
+	myQuadRenderer.Queue(FretboardMatrices::Targets[1], {}, FretAtlas::Note_Target_L1_Base);
+	myQuadRenderer.Queue(FretboardMatrices::Targets[1], NoteColor::Red, FretAtlas::Note_Target_L1_Head);
 
 	// Lane 3
-	QueueQuad(FretboardMatrices::Targets[2], {}, FretAtlas::Note_Target_C0_Base);
-	QueueQuad(FretboardMatrices::Targets[2], NoteColor::Yellow, FretAtlas::Note_Target_C0_Head);
+	myQuadRenderer.Queue(FretboardMatrices::Targets[2], {}, FretAtlas::Note_Target_C0_Base);
+	myQuadRenderer.Queue(FretboardMatrices::Targets[2], NoteColor::Yellow, FretAtlas::Note_Target_C0_Head);
 
 	// Lane 4
-	QueueQuad(FretboardMatrices::Targets[3], {}, FretAtlas::Note_Target_R1_Base);
-	QueueQuad(FretboardMatrices::Targets[3], NoteColor::Blue, FretAtlas::Note_Target_R1_Head);
+	myQuadRenderer.Queue(FretboardMatrices::Targets[3], {}, FretAtlas::Note_Target_R1_Base);
+	myQuadRenderer.Queue(FretboardMatrices::Targets[3], NoteColor::Blue, FretAtlas::Note_Target_R1_Head);
 
 	// Lane 5
-	QueueQuad(FretboardMatrices::Targets[4], {}, FretAtlas::Note_Target_R2_Base);
-	QueueQuad(FretboardMatrices::Targets[4], NoteColor::Orange, FretAtlas::Note_Target_R2_Head);
-}
-
-void ChartRenderer::QueueQuad(const Atrium::Matrix& aTransform, std::optional<Atrium::Color32> aColor, std::optional<Atrium::RectangleF> aUVRectangle)
-{
-	ChartQuadInstance& instance = myQuadInstanceData.emplace_back();
-	instance.Transform = aTransform;
-
-	const Atrium::Color32 color = aColor.value_or(Atrium::Color32::Predefined::White);
-	instance.Color[0] = static_cast<float>(color.R) / 255.f;
-	instance.Color[1] = static_cast<float>(color.G) / 255.f;
-	instance.Color[2] = static_cast<float>(color.B) / 255.f;
-	instance.Color[3] = static_cast<float>(color.A) / 255.f;
-
-	const auto uvRectangle = aUVRectangle.value_or(Atrium::RectangleF(Atrium::PointF(0, 0), Atrium::SizeF(1, 1)));
-	instance.UVMin = Atrium::Vector2(uvRectangle.TopLeft());
-	instance.UVMax = Atrium::Vector2(uvRectangle.BottomRight());
-}
-
-void ChartRenderer::FlushQuads(Atrium::Core::FrameContext& aContext, std::size_t anIndex)
-{
-	CONTEXT_ZONE(aContext, "Render quads");
-
-	const std::size_t queuedSinceLastFlush = myQuadInstanceData.size() - myLastQuadFlush;
-	if (queuedSinceLastFlush == 0)
-		return;
-
-	QuadInstanceGroup& instanceGroup = myQuadGroups.emplace_back();
-	instanceGroup.Start = myLastQuadFlush;
-	instanceGroup.Count = queuedSinceLastFlush;
-	instanceGroup.ControllerIndex = anIndex;
-
-	myLastQuadFlush = myQuadInstanceData.size();
+	myQuadRenderer.Queue(FretboardMatrices::Targets[4], {}, FretAtlas::Note_Target_R2_Base);
+	myQuadRenderer.Queue(FretboardMatrices::Targets[4], NoteColor::Orange, FretAtlas::Note_Target_R2_Head);
 }
 
 float ChartRenderer::TimeToPositionOffset(std::chrono::microseconds aTime) const
