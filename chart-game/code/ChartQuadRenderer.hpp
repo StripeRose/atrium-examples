@@ -14,9 +14,10 @@ public:
 	void Setup(
 		Atrium::Core::GraphicsAPI& aGraphicsAPI,
 		const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature,
-		Atrium::Core::GraphicsFormat aColorTargetFormat,
-		std::shared_ptr<Atrium::Core::Texture> aTexture
+		Atrium::Core::GraphicsFormat aColorTargetFormat
 	);
+
+	void SetTexture(std::shared_ptr<Atrium::Core::Texture> aTexture);
 
 	void Render(
 		Atrium::Core::FrameContext& aContext,

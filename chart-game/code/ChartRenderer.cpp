@@ -10,13 +10,6 @@
 
 #define LOOKAHEAD std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(3))
 
-struct ModelViewProjection
-{
-	Atrium::Matrix Model;
-	Atrium::Matrix View;
-	Atrium::Matrix Projection;
-};
-
 ChartRenderer::ChartRenderer(ChartPlayer& aPlayer)
 	: myPlayer(aPlayer)
 { }
@@ -24,8 +17,6 @@ ChartRenderer::ChartRenderer(ChartPlayer& aPlayer)
 void ChartRenderer::SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atrium::Core::GraphicsFormat aColorTargetFormat)
 {
 	ZoneScoped;
-
-	myFretboardTexture = aGraphicsAPI.GetResourceManager().LoadTexture("fretboard.dds");
 
 	std::unique_ptr<Atrium::Core::RootSignatureBuilder> builder = aGraphicsAPI.GetResourceManager().CreateRootSignature();
 
@@ -51,14 +42,11 @@ void ChartRenderer::SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atri
 
 	std::shared_ptr<Atrium::Core::RootSignature> rootSignature = builder->Finalize();
 
-	myQuadRenderer.Setup(
-		aGraphicsAPI,
-		rootSignature,
-		aColorTargetFormat,
-		aGraphicsAPI.GetResourceManager().LoadTexture("fretatlas.dds")
-	);
+	myQuadRenderer.Setup(aGraphicsAPI, rootSignature, aColorTargetFormat);
+	myQuadRenderer.SetTexture(aGraphicsAPI.GetResourceManager().LoadTexture("fretatlas.dds"));
 
-	SetupFretboardResources(aGraphicsAPI, rootSignature, aColorTargetFormat);
+	myFretboardRenderer.Setup(aGraphicsAPI, rootSignature, aColorTargetFormat);
+	myFretboardRenderer.SetTexture(aGraphicsAPI.GetResourceManager().LoadTexture("fretboard.dds"));
 }
 
 void ChartRenderer::Render(Atrium::Core::FrameContext& aContext, const std::shared_ptr<Atrium::Core::RenderTexture>& aTarget)
@@ -81,10 +69,7 @@ void ChartRenderer::Render(Atrium::Core::FrameContext& aContext, const std::shar
 		ZoneScopedN("Controller");
 		aContext.SetViewport(controllerRects[i]);
 
-		aContext.SetPipelineState(myFretboardPipelineState);
-		aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerObject, 0, myFretboardModelViewProjection);
-		aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerMaterial, 0, myFretboardTexture);
-		myFretboardMesh->DrawToFrame(aContext);
+		myFretboardRenderer.Render(aContext);
 
 		QueueFretboardQuads();
 		RenderController(*controllers.at(i));
@@ -98,31 +83,6 @@ void ChartRenderer::Render(Atrium::Core::FrameContext& aContext, const std::shar
 			aContext.SetViewport(controllerRects[aGroup]);
 		}
 	);
-}
-
-void ChartRenderer::SetupFretboardResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature, Atrium::Core::GraphicsFormat aColorTargetFormat)
-{
-	ZoneScoped;
-
-	myFretboardMesh = CreateFretboardMesh(aGraphicsAPI);
-	myFretboardMesh->SetName(L"Fretboard vertices");
-
-	Atrium::Core::PipelineStateDescription fretboardPipelineDescription;
-	fretboardPipelineDescription.RootSignature = aRootSignature;
-	fretboardPipelineDescription.InputLayout = ChartFretboardVertex::GetInputLayout();
-	const std::filesystem::path shaderPath = "ChartFretboard.hlsl";
-	fretboardPipelineDescription.VertexShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, Atrium::Core::Shader::Type::Vertex, "vertexShader");
-	fretboardPipelineDescription.PixelShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, Atrium::Core::Shader::Type::Pixel, "pixelShader");
-	fretboardPipelineDescription.OutputFormats = { aColorTargetFormat };
-	myFretboardPipelineState = aGraphicsAPI.GetResourceManager().CreatePipelineState(fretboardPipelineDescription);
-
-	ModelViewProjection fretboardMatrices;
-	fretboardMatrices.Model = Atrium::Matrix::Identity();
-	fretboardMatrices.View = FretboardMatrices::CameraViewMatrix;
-	fretboardMatrices.Projection = FretboardMatrices::CameraProjectionMatrix;
-
-	myFretboardModelViewProjection = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(Atrium::Core::GraphicsBuffer::Target::Constant, 1, sizeof(ModelViewProjection));
-	myFretboardModelViewProjection->SetData(&fretboardMatrices, sizeof(ModelViewProjection));
 }
 
 std::pair<int, int> ChartRenderer::GetControllerRectanglesGrid(const Atrium::RectangleF& aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const

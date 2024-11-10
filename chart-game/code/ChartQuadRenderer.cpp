@@ -23,13 +23,10 @@ void ChartQuadRenderer::Flush(std::size_t aGroupID)
 void ChartQuadRenderer::Setup(
 	Atrium::Core::GraphicsAPI& aGraphicsAPI,
 	const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature,
-	Atrium::Core::GraphicsFormat aColorTargetFormat,
-	std::shared_ptr<Atrium::Core::Texture> aTexture
+	Atrium::Core::GraphicsFormat aColorTargetFormat
 	)
 {
 	ZoneScoped;
-
-	myTexture = aTexture;
 
 	myQuadMesh = CreateQuadMesh(aGraphicsAPI);
 	myQuadMesh->SetName(L"Quad");
@@ -57,6 +54,11 @@ void ChartQuadRenderer::Setup(
 	myCameraMatrices->SetData(&cameraMatrices, sizeof(CameraMatrices));
 
 	myQuadInstanceBuffer = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(Atrium::Core::GraphicsBuffer::Target::Vertex, 512, sizeof(ChartQuadInstance));
+}
+
+void ChartQuadRenderer::SetTexture(std::shared_ptr<Atrium::Core::Texture> aTexture)
+{
+	myTexture = aTexture;
 }
 
 void ChartQuadRenderer::Render(Atrium::Core::FrameContext& aContext, std::function<void(std::size_t)> aGroupPreparation)

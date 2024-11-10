@@ -1,7 +1,9 @@
 // Filter "Chart/Rendering"
+
 #pragma once
 
 #include "ChartMeshes.hpp"
+#include "ChartFretboardRenderer.hpp"
 #include "ChartQuadRenderer.hpp"
 #include "Mesh.hpp"
 
@@ -12,7 +14,9 @@
 class ChartController;
 class ChartGuitarTrack;
 class ChartPlayer;
+
 struct ChartNoteRange;
+
 class ChartRenderer
 {
 public:
@@ -23,8 +27,6 @@ public:
 	void Render(Atrium::Core::FrameContext& aContext, const std::shared_ptr<Atrium::Core::RenderTexture>& aTarget);
 
 private:
-	void SetupFretboardResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature, Atrium::Core::GraphicsFormat aColorTargetFormat);
-
 	std::pair<int, int> GetControllerRectanglesGrid(const Atrium::RectangleF& aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const;
 	std::vector<Atrium::RectangleF> GetControllerRectangles(const Atrium::RectangleF& aTotalRectangle, std::size_t aControllerCount) const;
 
@@ -43,10 +45,5 @@ private:
 	ChartPlayer& myPlayer;
 
 	ChartQuadRenderer myQuadRenderer;
-
-	std::shared_ptr<Atrium::Core::Texture> myFretboardTexture;
-
-	std::unique_ptr<Mesh> myFretboardMesh;
-	std::shared_ptr<Atrium::Core::PipelineState> myFretboardPipelineState;
-	std::shared_ptr<Atrium::Core::GraphicsBuffer> myFretboardModelViewProjection;
+	ChartFretboardRenderer myFretboardRenderer;
 };
