@@ -11,7 +11,7 @@ struct ModelViewProjection
 	Atrium::Matrix Projection;
 };
 
-void ChartFretboardRenderer::Render(Atrium::Core::FrameContext& aContext)
+void ChartFretboardRenderer::Render(Atrium::Core::FrameGraphicsContext& aContext)
 {
 	aContext.SetPipelineState(myFretboardPipelineState);
 	aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerObject, 0, myFretboardModelViewProjection);

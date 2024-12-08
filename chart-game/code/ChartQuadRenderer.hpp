@@ -20,7 +20,7 @@ public:
 	void SetTexture(std::shared_ptr<Atrium::Core::Texture> aTexture);
 
 	void Render(
-		Atrium::Core::FrameContext& aContext,
+		Atrium::Core::FrameGraphicsContext& aContext,
 		std::function<void(std::size_t)> aGroupPreparation
 	);
 

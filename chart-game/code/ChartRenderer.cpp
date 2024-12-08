@@ -49,7 +49,7 @@ void ChartRenderer::SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atri
 	myFretboardRenderer.SetTexture(aGraphicsAPI.GetResourceManager().LoadTexture("fretboard.dds"));
 }
 
-void ChartRenderer::Render(Atrium::Core::FrameContext& aContext, const std::shared_ptr<Atrium::Core::RenderTexture>& aTarget)
+void ChartRenderer::Render(Atrium::Core::FrameGraphicsContext& aContext, const std::shared_ptr<Atrium::Core::RenderTexture>& aTarget)
 {
 	ZoneScoped;
 	CONTEXT_ZONE(aContext, "Chart");

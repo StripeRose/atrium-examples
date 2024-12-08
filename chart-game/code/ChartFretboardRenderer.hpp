@@ -9,7 +9,7 @@
 class ChartFretboardRenderer
 {
 public:
-	void Render(Atrium::Core::FrameContext& aContext);
+	void Render(Atrium::Core::FrameGraphicsContext& aContext);
 
 	void Setup(
 		Atrium::Core::GraphicsAPI& aGraphicsAPI,

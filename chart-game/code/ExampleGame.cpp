@@ -50,7 +50,7 @@ void ExampleGame::HandleLoop()
 	myChartPlayer.Update();
 
 	using namespace Atrium::Core;
-	FrameContext& frameContext = myEngineInstance.GetGraphicsAPI().GetCurrentFrameContext();
+	FrameGraphicsContext& frameContext = myEngineInstance.GetGraphicsAPI().GetCurrentFrameContext();
 
 	if (myWindow1)
 	{

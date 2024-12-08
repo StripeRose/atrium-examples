@@ -61,7 +61,7 @@ void ChartQuadRenderer::SetTexture(std::shared_ptr<Atrium::Core::Texture> aTextu
 	myTexture = aTexture;
 }
 
-void ChartQuadRenderer::Render(Atrium::Core::FrameContext& aContext, std::function<void(std::size_t)> aGroupPreparation)
+void ChartQuadRenderer::Render(Atrium::Core::FrameGraphicsContext& aContext, std::function<void(std::size_t)> aGroupPreparation)
 {
 	ZoneScoped;
 	CONTEXT_ZONE(aContext, "Render quads");

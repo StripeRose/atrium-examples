@@ -11,8 +11,8 @@ class Mesh
 public:
 	virtual ~Mesh() = default;
 
-	virtual void DrawToFrame(Atrium::Core::FrameContext& aFrameContext) = 0;
-	virtual void DrawInstancedToFrame(Atrium::Core::FrameContext& aFrameContext, unsigned int anInstanceCount, unsigned int anInstanceStart) = 0;
+	virtual void DrawToFrame(Atrium::Core::FrameGraphicsContext& aFrameContext) = 0;
+	virtual void DrawInstancedToFrame(Atrium::Core::FrameGraphicsContext& aFrameContext, unsigned int anInstanceCount, unsigned int anInstanceStart) = 0;
 
 	virtual void SetName(const std::wstring& aName) = 0;
 };
@@ -32,14 +32,14 @@ public:
 		, myName(L"Mesh")
 	{ }
 
-	void DrawToFrame(Atrium::Core::FrameContext& aFrameContext) override
+	void DrawToFrame(Atrium::Core::FrameGraphicsContext& aFrameContext) override
 	{
 		aFrameContext.SetPrimitiveTopology(Atrium::Core::PrimitiveTopology::TriangleList);
 		aFrameContext.SetVertexBuffer(myVertexBuffer);
 		aFrameContext.Draw(myVertexCount, 0);
 	}
 
-	void DrawInstancedToFrame(Atrium::Core::FrameContext& aFrameContext, unsigned int anInstanceCount, unsigned int anInstanceStart) override
+	void DrawInstancedToFrame(Atrium::Core::FrameGraphicsContext& aFrameContext, unsigned int anInstanceCount, unsigned int anInstanceStart) override
 	{
 		aFrameContext.SetPrimitiveTopology(Atrium::Core::PrimitiveTopology::TriangleList);
 		aFrameContext.SetVertexBuffer(myVertexBuffer);
