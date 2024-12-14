@@ -20,13 +20,13 @@ void ChartRenderer::SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atri
 
 	std::unique_ptr<Atrium::Core::RootSignatureBuilder> builder = aGraphicsAPI.GetResourceManager().CreateRootSignature();
 
-	builder->SetVisibility(Atrium::Core::ShaderVisibility::Vertex);
+	builder->SetVisibility(Atrium::Core::Shader::Type::Vertex);
 
 	// Model, view, projection.
 	builder->AddTable().AddCBVRange(1, 0, Atrium::Core::ResourceUpdateFrequency::PerObject);
 	builder->AddTable().AddCBVRange(1, 0, Atrium::Core::ResourceUpdateFrequency::PerFrame);
 
-	builder->SetVisibility(Atrium::Core::ShaderVisibility::Pixel);
+	builder->SetVisibility(Atrium::Core::Shader::Type::Pixel);
 
 	builder->AddTable().AddSRVRange(4, 0, Atrium::Core::ResourceUpdateFrequency::PerMaterial);
 
