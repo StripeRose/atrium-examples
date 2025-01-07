@@ -71,7 +71,7 @@ void ChartRenderer::Render(Atrium::Core::FrameGraphicsContext& aContext, const s
 
 		myFretboardRenderer.Render(aContext);
 
-		QueueFretboardQuads();
+		QueueTargets();
 		RenderController(*controllers.at(i));
 		myQuadRenderer.Flush(i);
 	}
@@ -206,22 +206,6 @@ void ChartRenderer::RenderNote_Guitar(const ChartNoteRange& aNote)
 	if (notePosition < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < notePosition)
 		return;
 
-	Atrium::RectangleF noteFill = FretAtlas::Note_Color;
-	Atrium::RectangleF noteShell = FretAtlas::Note_Shell_Strum;
-
-	switch (aNote.Type)
-	{
-		case ChartNoteType::Strum:
-			break;
-		case ChartNoteType::Tap:
-			noteFill = FretAtlas::Note_Color_Tap;
-			noteShell = FretAtlas::Note_Shell_Tap;
-			break;
-		case ChartNoteType::HOPO:
-			noteShell = FretAtlas::Note_Shell_HOPO;
-			break;
-	}
-
 	Atrium::Color32 noteColor;
 	switch (aNote.Lane)
 	{
@@ -249,8 +233,15 @@ void ChartRenderer::RenderNote_Guitar(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * notePosition
 	);
 
-	myQuadRenderer.Queue(noteTransform, noteColor, noteFill);
-	myQuadRenderer.Queue(noteTransform, {}, noteShell);
+	myQuadRenderer.Queue(noteTransform, noteColor,
+		aNote.Type == ChartNoteType::Tap ? FretAtlas::Note_Body_Tap : FretAtlas::Note_Body
+	);
+	myQuadRenderer.Queue(noteTransform, {},
+		FretAtlas::Note_Base
+	);
+	myQuadRenderer.Queue(noteTransform, {},
+		aNote.Type == ChartNoteType::HOPO ? FretAtlas::Note_Cap_HOPO : FretAtlas::Note_Cap_Neutral
+	);
 }
 
 void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
@@ -260,21 +251,8 @@ void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
 	if (notePosition < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < notePosition)
 		return;
 
-	Atrium::RectangleF noteFill = FretAtlas::Note_Color;
-	Atrium::RectangleF noteShell = FretAtlas::Note_Shell_Strum;
-
-	switch (aNote.Type)
-	{
-		case ChartNoteType::Strum:
-			break;
-		case ChartNoteType::Tap:
-			noteFill = FretAtlas::Note_Color_Tap;
-			noteShell = FretAtlas::Note_Shell_Tap;
-			break;
-		case ChartNoteType::HOPO:
-			noteShell = FretAtlas::Note_Shell_HOPO;
-			break;
-	}
+	if (aNote.Type != ChartNoteType::Strum)
+		Atrium::Debug::LogWarning("Open notes that aren't of type strum? How does that make sense?");
 
 	Atrium::Matrix noteTransform = FretboardMatrices::OpenTarget;
 
@@ -283,8 +261,9 @@ void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * notePosition
 	);
 
-	myQuadRenderer.Queue(noteTransform, NoteColor::Open, FretAtlas::Note_Color_Open);
-	myQuadRenderer.Queue(noteTransform, {}, FretAtlas::Note_Shell_Open);
+	myQuadRenderer.Queue(noteTransform, NoteColor::Open, FretAtlas::Note_Open_Body);
+	myQuadRenderer.Queue(noteTransform, {}, FretAtlas::Note_Open_Base);
+	myQuadRenderer.Queue(noteTransform, {}, FretAtlas::Note_Open_Cap_Neutral);
 }
 
 void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote)
@@ -327,7 +306,7 @@ void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * (FretboardMatrices::TargetOffset + 0.04f + sustainStart)
 	);
 
-	myQuadRenderer.Queue(sustainTransform, noteColor, FretAtlas::Note_Sustain_0);
+	myQuadRenderer.Queue(sustainTransform, noteColor, FretAtlas::Sustain_Neutral);
 }
 
 void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
@@ -350,30 +329,43 @@ void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * (FretboardMatrices::TargetOffset + 0.04f + sustainStart)
 	);
 
-	myQuadRenderer.Queue(sustainTransform, NoteColor::Open, FretAtlas::Note_Sustain_Open_0);
+	myQuadRenderer.Queue(sustainTransform, NoteColor::Open, FretAtlas::Sustain_Open);
 }
 
-void ChartRenderer::QueueFretboardQuads()
+void ChartRenderer::QueueTargets()
 {
-	// Lane 1
-	myQuadRenderer.Queue(FretboardMatrices::Targets[0], {}, FretAtlas::Note_Target_L2_Base);
-	myQuadRenderer.Queue(FretboardMatrices::Targets[0], NoteColor::Green, FretAtlas::Note_Target_L2_Head);
+	auto drawTarget = [&](const int anIndex, const Atrium::Color32 aColor)
+		{
+			switch (anIndex)
+			{
+				case 0:
+					myQuadRenderer.Queue(FretboardMatrices::Targets[0], {}, FretAtlas::Target_Base_0);
+					break;
+				case 1:
+					myQuadRenderer.Queue(FretboardMatrices::Targets[1], {}, FretAtlas::Target_Base_1);
+					break;
+				case 2:
+					myQuadRenderer.Queue(FretboardMatrices::Targets[2], {}, FretAtlas::Target_Base_2);
+					break;
+				case 3:
+					myQuadRenderer.Queue(FretboardMatrices::Targets[3], {}, FretAtlas::Target_Base_3);
+					break;
+				case 4:
+					myQuadRenderer.Queue(FretboardMatrices::Targets[4], {}, FretAtlas::Target_Base_4);
+					break;
+			}
 
-	// Lane 2
-	myQuadRenderer.Queue(FretboardMatrices::Targets[1], {}, FretAtlas::Note_Target_L1_Base);
-	myQuadRenderer.Queue(FretboardMatrices::Targets[1], NoteColor::Red, FretAtlas::Note_Target_L1_Head);
+			myQuadRenderer.Queue(FretboardMatrices::Targets[anIndex], {}, FretAtlas::Target_Head);
+			myQuadRenderer.Queue(FretboardMatrices::Targets[anIndex], aColor, FretAtlas::Target_ColorRing);
+			myQuadRenderer.Queue(FretboardMatrices::Targets[anIndex], {}, FretAtlas::Target_Cap_Neutral);
+			myQuadRenderer.Queue(FretboardMatrices::Targets[anIndex], {}, FretAtlas::Target_Ring);
+		};
 
-	// Lane 3
-	myQuadRenderer.Queue(FretboardMatrices::Targets[2], {}, FretAtlas::Note_Target_C0_Base);
-	myQuadRenderer.Queue(FretboardMatrices::Targets[2], NoteColor::Yellow, FretAtlas::Note_Target_C0_Head);
-
-	// Lane 4
-	myQuadRenderer.Queue(FretboardMatrices::Targets[3], {}, FretAtlas::Note_Target_R1_Base);
-	myQuadRenderer.Queue(FretboardMatrices::Targets[3], NoteColor::Blue, FretAtlas::Note_Target_R1_Head);
-
-	// Lane 5
-	myQuadRenderer.Queue(FretboardMatrices::Targets[4], {}, FretAtlas::Note_Target_R2_Base);
-	myQuadRenderer.Queue(FretboardMatrices::Targets[4], NoteColor::Orange, FretAtlas::Note_Target_R2_Head);
+	drawTarget(0, NoteColor::Green);
+	drawTarget(1, NoteColor::Red);
+	drawTarget(2, NoteColor::Yellow);
+	drawTarget(3, NoteColor::Blue);
+	drawTarget(4, NoteColor::Orange);
 }
 
 float ChartRenderer::TimeToPositionOffset(std::chrono::microseconds aTime) const

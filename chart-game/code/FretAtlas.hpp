@@ -26,38 +26,32 @@ namespace FretAtlas
 		);
 	}
 
-	constexpr Atrium::RectangleF White = ToUV(256, 330, 4, 4);
+	constexpr Atrium::RectangleF Note_Cap_Neutral = ToUV(0, 0, 128, 64);
+	constexpr Atrium::RectangleF Note_Cap_HOPO = ToUV(128, 0, 128, 64);
+	constexpr Atrium::RectangleF Note_Body = ToUV(0, 64, 128, 64);
+	constexpr Atrium::RectangleF Note_Body_Tap = ToUV(128, 64, 128, 64);
+	constexpr Atrium::RectangleF Note_Base = ToUV(0, 128, 128, 64);
 
-	constexpr Atrium::RectangleF BeatBar = ToUV(0, 536, 1024, 16);
-	constexpr Atrium::RectangleF Sidebar_L = ToUV(652, 0, 64, 512);
-	constexpr Atrium::RectangleF Sidebar_R = ToUV(716, 0, -64, 512);
+	constexpr Atrium::RectangleF Note_Open_Cap_HOPO = ToUV(384, 0, 384, 64);
+	constexpr Atrium::RectangleF Note_Open_Cap_Neutral = ToUV(384, 64, 384, 64);
+	constexpr Atrium::RectangleF Note_Open_Body = ToUV(384, 128, 384, 64);
+	constexpr Atrium::RectangleF Note_Open_Base = ToUV(384, 192, 384, 64);
 
-	constexpr Atrium::RectangleF Note_Shell_Strum = ToUV(0, 256, 128, 64);
-	constexpr Atrium::RectangleF Note_Shell_Tap = ToUV(0, 192, 128, 64);
-	constexpr Atrium::RectangleF Note_Shell_HOPO = ToUV(0, 128, 128, 64);
-	constexpr Atrium::RectangleF Note_Shell_Open = ToUV(256, 256, 396, 64);
+	constexpr Atrium::RectangleF Sustain_Neutral = ToUV(0, 448, 128, 64);
+	constexpr Atrium::RectangleF Sustain_Active = ToUV(128, 448, 128, 64);
+	constexpr Atrium::RectangleF Sustain_Missed = ToUV(256, 448, 128, 64);
+	constexpr Atrium::RectangleF Sustain_Open = ToUV(384, 448, 384, 64);
 
-	constexpr Atrium::RectangleF Note_Color = ToUV(128, 256, 128, 64);
-	constexpr Atrium::RectangleF Note_Color_Tap = ToUV(128, 192, 128, 64);
-	constexpr Atrium::RectangleF Note_Color_Open = ToUV(256, 192, 396, 64);
-
-	constexpr Atrium::RectangleF Note_Sustain_1 = ToUV(292, 405, 73, 40);
-	constexpr Atrium::RectangleF Note_Sustain_0 = ToUV(292, 445, 73, 30);
-	constexpr Atrium::RectangleF Note_Sustain_Missed_1 = ToUV(365, 405, 73, 40);
-	constexpr Atrium::RectangleF Note_Sustain_Missed_0 = ToUV(365, 445, 73, 30);
-	constexpr Atrium::RectangleF Note_Sustain_Open_1 = ToUV(0, 320, 512, 80);
-	constexpr Atrium::RectangleF Note_Sustain_Open_0 = ToUV(0, 400, 512, 5);
-
-	constexpr Atrium::RectangleF Note_Target_L2_Head = ToUV(0, 0, 128, 64);
-	constexpr Atrium::RectangleF Note_Target_L2_Base = ToUV(0, 64, 128, 64);
-	constexpr Atrium::RectangleF Note_Target_L1_Head = ToUV(128, 0, 128, 64);
-	constexpr Atrium::RectangleF Note_Target_L1_Base = ToUV(128, 64, 128, 64);
-	constexpr Atrium::RectangleF Note_Target_C0_Head = ToUV(256, 0, 128, 64);
-	constexpr Atrium::RectangleF Note_Target_C0_Base = ToUV(256, 64, 128, 64);
-	constexpr Atrium::RectangleF Note_Target_R1_Head = ToUV(256, 0, -128, 64);
-	constexpr Atrium::RectangleF Note_Target_R1_Base = ToUV(256, 64, -128, 64);
-	constexpr Atrium::RectangleF Note_Target_R2_Head = ToUV(128, 0, -128, 64);
-	constexpr Atrium::RectangleF Note_Target_R2_Base = ToUV(128, 64, -128, 64);
+	constexpr Atrium::RectangleF Target_Cap_Active = ToUV(128, 128, 128, 64);
+	constexpr Atrium::RectangleF Target_Cap_Neutral = ToUV(256, 128, 128, 64);
+	constexpr Atrium::RectangleF Target_ColorRing = ToUV(256, 192, 128, 64);
+	constexpr Atrium::RectangleF Target_Head = ToUV(256, 256, 128, 64);
+	constexpr Atrium::RectangleF Target_Ring = ToUV(128, 256, 128, 64);
+	constexpr Atrium::RectangleF Target_Base_0 = ToUV(0, 320, 128, 64);
+	constexpr Atrium::RectangleF Target_Base_1 = ToUV(128, 320, 128, 64);
+	constexpr Atrium::RectangleF Target_Base_2 = ToUV(256, 320, 128, 64);
+	constexpr Atrium::RectangleF Target_Base_3 = ToUV(256, 320, -128, 64);
+	constexpr Atrium::RectangleF Target_Base_4 = ToUV(128, 320, -128, 64);
 };
 
 namespace FretboardMatrices
