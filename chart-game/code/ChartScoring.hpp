@@ -1,4 +1,4 @@
-// Filter "Chart/Playback"
+// Filter "Chart/Scoring"
 
 #pragma once
 
