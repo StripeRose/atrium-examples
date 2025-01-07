@@ -30,7 +30,8 @@ void ChartHumanController::HandleInput(const Atrium::Core::InputEvent& anInputEv
 			break;
 
 		case InputSourceId::Keyboard::Spacebar:
-			Strum();
+			if (anInputEvent.Type == Atrium::Core::InputEventType::Pressed)
+				Strum();
 			break;
 	}
 }
