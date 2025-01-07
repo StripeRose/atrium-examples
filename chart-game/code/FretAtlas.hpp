@@ -7,10 +7,10 @@
 
 namespace NoteColor
 {
-	constexpr Atrium::Color32 Green(0xFF427D05);
+	constexpr Atrium::Color32 Green(0xFF59D606);
 	constexpr Atrium::Color32 Red(0xFFDE0000);
-	constexpr Atrium::Color32 Yellow(0xFFD6D30D);
-	constexpr Atrium::Color32 Blue(0xFF106ED0);
+	constexpr Atrium::Color32 Yellow(0xFFEFE810);
+	constexpr Atrium::Color32 Blue(0xFF1280ED);
 	constexpr Atrium::Color32 Orange(0xFFEF9612);
 
 	constexpr Atrium::Color32 Open(0xFF9225C5);
