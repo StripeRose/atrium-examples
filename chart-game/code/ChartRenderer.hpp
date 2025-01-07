@@ -38,7 +38,7 @@ private:
 	void RenderNote_GuitarSustain(const ChartNoteRange& aNote);
 	void RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote);
 
-	void QueueTargets();
+	void QueueTargets(ChartController& aController);
 
 	float TimeToPositionOffset(std::chrono::microseconds aTime) const;
 

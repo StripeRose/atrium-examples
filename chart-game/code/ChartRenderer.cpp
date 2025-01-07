@@ -71,7 +71,7 @@ void ChartRenderer::Render(Atrium::Core::FrameGraphicsContext& aContext, const s
 
 		myFretboardRenderer.Render(aContext);
 
-		QueueTargets();
+		QueueTargets(*controllers.at(i));
 		RenderController(*controllers.at(i));
 		myQuadRenderer.Flush(i);
 	}
@@ -332,8 +332,10 @@ void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
 	myQuadRenderer.Queue(sustainTransform, NoteColor::Open, FretAtlas::Sustain_Open);
 }
 
-void ChartRenderer::QueueTargets()
+void ChartRenderer::QueueTargets(ChartController& aController)
 {
+	const std::span<const bool> laneStates = aController.GetLaneStates();
+
 	auto drawTarget = [&](const int anIndex, const Atrium::Color32 aColor)
 		{
 			switch (anIndex)
@@ -355,9 +357,20 @@ void ChartRenderer::QueueTargets()
 					break;
 			}
 
-			myQuadRenderer.Queue(FretboardMatrices::Targets[anIndex], {}, FretAtlas::Target_Head);
-			myQuadRenderer.Queue(FretboardMatrices::Targets[anIndex], aColor, FretAtlas::Target_ColorRing);
-			myQuadRenderer.Queue(FretboardMatrices::Targets[anIndex], {}, FretAtlas::Target_Cap_Neutral);
+			const bool isActive =
+				laneStates.size() > anIndex
+				? laneStates.data()[anIndex]
+				: false;
+
+			const Atrium::Matrix targetHeadTransform
+				= FretboardMatrices::Targets[anIndex]
+				* (isActive ? Atrium::Matrix::CreateTranslation(0, -0.01f, 0) : Atrium::Matrix::Identity())
+				;
+
+			myQuadRenderer.Queue(targetHeadTransform, {}, FretAtlas::Target_Head);
+			myQuadRenderer.Queue(targetHeadTransform, aColor, FretAtlas::Target_ColorRing);
+			myQuadRenderer.Queue(targetHeadTransform, {}, isActive ? FretAtlas::Target_Cap_Active : FretAtlas::Target_Cap_Neutral);
+
 			myQuadRenderer.Queue(FretboardMatrices::Targets[anIndex], {}, FretAtlas::Target_Ring);
 		};
 
