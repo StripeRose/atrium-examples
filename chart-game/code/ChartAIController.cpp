@@ -150,6 +150,9 @@ void ChartAIController::RefreshGrips()
 
 	const ChartTrack* track = GetTrack();
 
+	if (!track)
+		return;
+
 	const auto difficultyIterator = track->GetNoteRanges().find(GetTrackDifficulty());
 	if (difficultyIterator == track->GetNoteRanges().end())
 		return;
