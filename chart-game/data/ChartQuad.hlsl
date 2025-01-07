@@ -2,7 +2,7 @@
 
 // Pipeline resources
 Texture2D<float4> tex : register(t0, Space_PerMaterial);
-SamplerState clampPoint : register(s0, Space_Constant);
+SamplerState clampLinear : register(s1, Space_Constant);
 
 cbuffer Camera : register(b0, Space_PerFrame)
 {
@@ -45,6 +45,6 @@ PixelData vertexShader(QuadVertex anInput)
 
 float4 pixelShader(PixelData anInput) : SV_TARGET
 {
-    const float4 textureColor = tex.Sample(clampPoint, anInput.UV);
+    const float4 textureColor = tex.Sample(clampLinear, anInput.UV);
     return textureColor * anInput.Color;
 }
