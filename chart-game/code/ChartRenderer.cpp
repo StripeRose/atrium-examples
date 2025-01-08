@@ -362,9 +362,18 @@ void ChartRenderer::QueueTargets(ChartController& aController)
 				? laneStates.data()[anIndex]
 				: false;
 
+			float heightAdjustment = (isActive ? -0.1f : 0.f);
+
+			static constexpr std::chrono::microseconds StrumAnimationLength = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(150));
+
+			const std::chrono::microseconds timeSinceStrum = aController.GetLastStrum() ? myPlayer.GetPlayhead() - aController.GetLaneLastStrum().data()[anIndex] : StrumAnimationLength;
+			const float stateFade = Atrium::Math::Max(1.f - (static_cast<float>(timeSinceStrum.count()) / static_cast<float>(StrumAnimationLength.count())), 0.f);
+
+			heightAdjustment = Atrium::Math::Lerp(heightAdjustment, 0.5f, stateFade);
+
 			const Atrium::Matrix targetHeadTransform
-				= FretboardMatrices::Targets[anIndex]
-				* (isActive ? Atrium::Matrix::CreateTranslation(0, -0.01f, 0) : Atrium::Matrix::Identity())
+				= (isActive ? Atrium::Matrix::CreateTranslation(0, heightAdjustment, 0) : Atrium::Matrix::Identity())
+				* FretboardMatrices::Targets[anIndex]
 				;
 
 			myQuadRenderer.Queue(targetHeadTransform, {}, FretAtlas::Target_Head);

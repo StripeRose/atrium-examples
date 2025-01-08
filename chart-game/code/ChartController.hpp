@@ -25,6 +25,7 @@ public:
 	virtual const char* GetName() const = 0;
 
 	std::span<const bool> GetLaneStates() const { return myLaneStates; }
+	std::span<const std::chrono::microseconds> GetLaneLastStrum() const { return myLaneLastStrum; }
 	const std::optional<std::chrono::microseconds>& GetLastStrum() const { return myLastStrum; }
 
 	const ChartScoring& GetScoring() const { return myScoring; }
@@ -67,9 +68,12 @@ private:
 	const ChartData* myCurrentChart = nullptr;
 
 	std::array<bool, 10> myLaneStates;
+	std::array<std::chrono::microseconds, 10> myLaneLastStrum;
+
 	std::chrono::microseconds myLastPlayhead;
 	std::optional<std::chrono::microseconds> myLastStrum;
 
 	// Per lane, the timepoint we've checked hits and misses up until.
 	std::map<std::uint8_t, std::chrono::microseconds> myLastLaneHitCheck;
+
 };

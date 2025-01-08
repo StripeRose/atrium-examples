@@ -212,5 +212,11 @@ void ChartController::Strum()
 {
 	myLastStrum = myLastPlayhead;
 
+	for (std::size_t i = 0; i < myLaneStates.size(); ++i)
+	{
+		if (myLaneStates[i])
+			myLaneLastStrum[i] = myLastPlayhead;
+	}
+
 	CheckStrumHits();
 }

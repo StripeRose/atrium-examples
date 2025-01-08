@@ -100,7 +100,9 @@ void ChartTestWindow::ImGui()
 void ChartTestWindow::ImGui_GuitarControlState([[maybe_unused]] ChartController& aController)
 {
 #if IS_IMGUI_ENABLED
-	auto drawLanes = [&aController](const std::span<const ImColor>& someColors)
+	static constexpr std::chrono::microseconds StrumAnimationLength = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(300));
+
+	auto drawLanes = [&](const std::span<const ImColor>& someColors)
 		{
 			for (int i = 0; i < someColors.size(); ++i)
 			{
@@ -113,11 +115,25 @@ void ChartTestWindow::ImGui_GuitarControlState([[maybe_unused]] ChartController&
 				neutralColor.y *= 0.5f;
 				neutralColor.z *= 0.5f;
 
-				ImGui::PushStyleColor(ImGuiCol_CheckMark, (ImVec4)someColors[i]);
+				ImVec4 checkColor = someColors[i];
+				checkColor.x = Atrium::Math::Lerp(neutralColor.x, checkColor.x, aController.GetLaneStates()[i] ? 1 : 0);
+				checkColor.y = Atrium::Math::Lerp(neutralColor.y, checkColor.y, aController.GetLaneStates()[i] ? 1 : 0);
+				checkColor.z = Atrium::Math::Lerp(neutralColor.z, checkColor.z, aController.GetLaneStates()[i] ? 1 : 0);
+				checkColor.w = Atrium::Math::Lerp(neutralColor.w, checkColor.w, aController.GetLaneStates()[i] ? 1 : 0);
+
+				const std::chrono::microseconds timeSinceStrum = aController.GetLastStrum() ? myChartPlayer.GetPlayhead() - aController.GetLaneLastStrum().data()[i] : StrumAnimationLength;
+				const float stateFade = Atrium::Math::Max(1.f - (static_cast<float>(timeSinceStrum.count()) / static_cast<float>(StrumAnimationLength.count())), 0.f);
+
+				checkColor.x = Atrium::Math::Lerp(checkColor.x, 1.f, stateFade);
+				checkColor.y = Atrium::Math::Lerp(checkColor.y, 1.f, stateFade);
+				checkColor.z = Atrium::Math::Lerp(checkColor.z, 1.f, stateFade);
+				checkColor.w = Atrium::Math::Lerp(checkColor.w, checkColor.w, stateFade);
+
+				ImGui::PushStyleColor(ImGuiCol_CheckMark, (ImVec4)checkColor);
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, neutralColor);
 				ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, neutralColor);
 				ImGui::PushStyleColor(ImGuiCol_FrameBgActive, neutralColor);
-				ImGui::RadioButton("", aController.GetLaneStates()[i]);
+				ImGui::RadioButton("", true);
 				ImGui::PopStyleColor(4);
 
 				ImGui::PopID();
@@ -126,10 +142,8 @@ void ChartTestWindow::ImGui_GuitarControlState([[maybe_unused]] ChartController&
 
 	auto drawStrum = [&]()
 		{
-			static constexpr std::chrono::microseconds StrumLength = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(300));
-
-			const std::chrono::microseconds timeSinceStrum = aController.GetLastStrum() ? myChartPlayer.GetPlayhead() - aController.GetLastStrum().value() : StrumLength;
-			const float stateFade = 1.f - (static_cast<float>(timeSinceStrum.count()) / static_cast<float>(StrumLength.count()));
+			const std::chrono::microseconds timeSinceStrum = aController.GetLastStrum() ? myChartPlayer.GetPlayhead() - aController.GetLastStrum().value() : StrumAnimationLength;
+			const float stateFade = 1.f - (static_cast<float>(timeSinceStrum.count()) / static_cast<float>(StrumAnimationLength.count()));
 
 			ImGui::PushID("strum");
 			ImVec4 neutralColor;
