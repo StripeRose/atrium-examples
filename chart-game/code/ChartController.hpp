@@ -65,6 +65,8 @@ private:
 
 	std::optional<float> CalculateNoteAccuracy(std::chrono::microseconds aPerfectTimepoint, std::chrono::microseconds aHitTimepoint) const;
 
+	void UpdateActiveSustains(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew);
+
 	ChartScoring myScoring;
 	ChartTrackType myTrackType;
 	ChartTrackDifficulty myTrackDifficulty;
@@ -80,4 +82,7 @@ private:
 	std::map<std::uint8_t, std::chrono::microseconds> myLastLaneHitCheck;
 
 	std::set<const ChartNoteRange*> myActiveSustains;
+
+	// Includes timepoint where the miss began, for use with sustains.
+	std::map<const ChartNoteRange*, std::chrono::microseconds> myMissedNoteStarts;
 };

@@ -34,23 +34,7 @@ void ChartController::HandlePlayheadStep(const std::chrono::microseconds& aPrevi
 
 	myLastStrum = myLastStrum.transform(reverseTime);
 
-	while (true)
-	{
-		const auto activeSustainInLane = std::find_if(
-			myActiveSustains.begin(),
-			myActiveSustains.end(),
-			[&aNew](const ChartNoteRange* aNote) { return aNote->End < aNew; }
-		);
-
-		if (activeSustainInLane == myActiveSustains.end())
-			break;
-
-		myScoring.SustainProgress(*myCurrentChart, aPrevious, (*activeSustainInLane)->End);
-		myActiveSustains.erase(activeSustainInLane);
-	}
-
-	for (std::size_t i = 0; i < myActiveSustains.size(); ++i)
-		myScoring.SustainProgress(*myCurrentChart, aPrevious, aNew);
+	UpdateActiveSustains(aPrevious, aNew);
 
 	myLastPlayhead = aNew;
 
@@ -199,6 +183,27 @@ std::optional<float> ChartController::CalculateNoteAccuracy(std::chrono::microse
 		return { };
 
 	return accuracy;
+}
+
+void ChartController::UpdateActiveSustains(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew)
+{
+	while (true)
+	{
+		const auto activeSustainInLane = std::find_if(
+			myActiveSustains.begin(),
+			myActiveSustains.end(),
+			[&aNew](const ChartNoteRange* aNote) { return aNote->End < aNew; }
+		);
+
+		if (activeSustainInLane == myActiveSustains.end())
+			break;
+
+		myScoring.SustainProgress(*myCurrentChart, aPrevious, (*activeSustainInLane)->End);
+		myActiveSustains.erase(activeSustainInLane);
+	}
+
+	for (std::size_t i = 0; i < myActiveSustains.size(); ++i)
+		myScoring.SustainProgress(*myCurrentChart, aPrevious, aNew);
 }
 
 bool ChartController::IsSustainActive(const ChartNoteRange& aNoteRange) const
