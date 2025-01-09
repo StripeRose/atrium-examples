@@ -45,6 +45,7 @@ void ChartController::HandlePlayheadStep(const std::chrono::microseconds& aPrevi
 		if (activeSustainInLane == myActiveSustains.end())
 			break;
 
+		myScoring.SustainProgress(*myCurrentChart, aPrevious, (*activeSustainInLane)->End);
 		myActiveSustains.erase(activeSustainInLane);
 	}
 
