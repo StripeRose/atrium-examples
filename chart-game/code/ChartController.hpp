@@ -8,6 +8,7 @@
 
 #include <array>
 #include <chrono>
+#include <set>
 #include <span>
 
 class ChartData;
@@ -40,6 +41,8 @@ public:
 	#if IS_IMGUI_ENABLED
 	virtual void ImGui(ChartTestWindow& aTestWindow);
 	#endif
+
+	bool IsSustainActive(const ChartNoteRange& aNoteRange) const;
 
 	virtual void SetTrackType(ChartTrackType aType);
 	virtual void SetTrackDifficulty(ChartTrackDifficulty aDifficulty);
@@ -76,4 +79,5 @@ private:
 	// Per lane, the timepoint we've checked hits and misses up until.
 	std::map<std::uint8_t, std::chrono::microseconds> myLastLaneHitCheck;
 
+	std::set<const ChartNoteRange*> myActiveSustains;
 };

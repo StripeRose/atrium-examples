@@ -53,4 +53,9 @@ struct ChartNoteRange
 
 	std::chrono::microseconds Start = std::chrono::microseconds(0);
 	std::chrono::microseconds End = std::chrono::microseconds(0);
+
+	bool IsSustain() const
+	{
+		return (End - Start) >= std::chrono::microseconds(10'000);
+	}
 };

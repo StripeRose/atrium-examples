@@ -34,6 +34,20 @@ void ChartController::HandlePlayheadStep(const std::chrono::microseconds& /*aPre
 
 	myLastStrum = myLastStrum.transform(reverseTime);
 
+	while (true)
+	{
+		const auto activeSustainInLane = std::find_if(
+			myActiveSustains.begin(),
+			myActiveSustains.end(),
+			[&aNew](const ChartNoteRange* aNote) { return aNote->End < aNew; }
+		);
+
+		if (activeSustainInLane == myActiveSustains.end())
+			break;
+
+		myActiveSustains.erase(activeSustainInLane);
+	}
+
 	myLastPlayhead = aNew;
 
 	CheckUnhitNotes();
@@ -94,6 +108,9 @@ void ChartController::CheckTapHit(std::uint8_t aLane)
 	if (!accuracy.has_value())
 		return;
 
+	if (nextNote->IsSustain())
+		myActiveSustains.insert(nextNote);
+
 	myScoring.HitValidNotes(1);
 	myLastLaneHitCheck[aLane] = myLastPlayhead;
 }
@@ -126,9 +143,16 @@ void ChartController::CheckStrumHits()
 		const std::optional<float> accuracy = CalculateNoteAccuracy(nextNote->Start, myLastStrum.value());
 
 		if (accuracy)
+		{
+			if (nextNote->IsSustain())
+				myActiveSustains.insert(nextNote);
+
 			myScoring.HitValidNotes(1);
+		}
 		else
+		{
 			overStrummed = true;
+		}
 
 		myLastLaneHitCheck[lane] = myLastPlayhead;
 	}
@@ -173,6 +197,24 @@ std::optional<float> ChartController::CalculateNoteAccuracy(std::chrono::microse
 	return accuracy;
 }
 
+bool ChartController::IsSustainActive(const ChartNoteRange& aNoteRange) const
+{
+	const auto activeSustain = std::find_if(
+		myActiveSustains.begin(),
+		myActiveSustains.end(),
+		[&aNoteRange](const ChartNoteRange* aNote)
+		{
+			return
+				aNoteRange.Lane == aNote->Lane
+				&& aNoteRange.Start == aNote->Start
+				&& aNoteRange.End == aNote->End
+				;
+		}
+	);
+
+	return activeSustain != myActiveSustains.end();
+}
+
 void ChartController::SetTrackType(ChartTrackType aType)
 {
 	myTrackType = aType;
@@ -206,6 +248,18 @@ void ChartController::SetLane(std::uint8_t aLane, bool aState)
 		CheckTapHit(aLane);
 
 	myLaneStates.at(aLane) = aState;
+
+	if (!aState)
+	{
+		const auto activeSustainInLane = std::find_if(
+			myActiveSustains.begin(),
+			myActiveSustains.end(),
+			[&aLane](const ChartNoteRange* aNote) { return aNote->Lane == aLane; }
+		);
+
+		if (activeSustainInLane != myActiveSustains.end())
+			myActiveSustains.erase(activeSustainInLane);
+	}
 }
 
 void ChartController::Strum()

@@ -184,10 +184,13 @@ void ChartRenderer::RenderNotes(ChartController& aController, const ChartGuitarT
 	const std::vector<ChartNoteRange>& difficultyNotes = aTrack.GetNoteRanges().at(aController.GetTrackDifficulty());
 	for (const ChartNoteRange& note : difficultyNotes)
 	{
+		if (!note.IsSustain())
+			continue;
+
 		if (note.CanBeOpen && aController.AllowOpenNotes())
 			RenderNote_GuitarOpenSustain(note);
 		else
-			RenderNote_GuitarSustain(note);
+			RenderNote_GuitarSustain(note, aController.IsSustainActive(note));
 	}
 
 	for (auto note = difficultyNotes.crbegin(); note != difficultyNotes.crend(); ++note)
@@ -266,12 +269,10 @@ void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
 	myQuadRenderer.Queue(noteTransform, {}, FretAtlas::Note_Open_Cap_Neutral);
 }
 
-void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote)
+void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool isActive)
 {
 	const float sustainStart = TimeToPositionOffset(aNote.Start);
 	const float sustainEnd = TimeToPositionOffset(aNote.End);
-
-	// Todo: Early out if the sustain is too short and won't be visible anyway.
 
 	if (sustainEnd < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < sustainStart)
 		return;
@@ -306,15 +307,13 @@ void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote)
 		Atrium::Vector4::UnitZ() * (FretboardMatrices::TargetOffset + 0.04f + sustainStart)
 	);
 
-	myQuadRenderer.Queue(sustainTransform, noteColor, FretAtlas::Sustain_Neutral);
+	myQuadRenderer.Queue(sustainTransform, noteColor, isActive ? FretAtlas::Sustain_Active : FretAtlas::Sustain_Neutral);
 }
 
 void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
 {
 	const float sustainStart = TimeToPositionOffset(aNote.Start);
 	const float sustainEnd = TimeToPositionOffset(aNote.End);
-
-	// Todo: Early out if the sustain is too short and won't be visible anyway.
 
 	if (sustainEnd < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < sustainStart)
 		return;
