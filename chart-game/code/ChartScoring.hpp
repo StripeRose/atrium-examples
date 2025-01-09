@@ -2,11 +2,14 @@
 
 #pragma once
 
+#include <chrono>
+
 /*
 	Source
 	https://gaming.stackexchange.com/questions/7197/what-is-the-scoring-algorithm-for-rock-band-2
 */
 
+class ChartData;
 class ChartScoring
 {
 public:
@@ -19,6 +22,7 @@ public:
 	static constexpr unsigned int BaseScore = 25;
 	static constexpr unsigned int StreakMultiplierInterval = 10;
 	static constexpr unsigned int MaximumMultiplier = 4;
+	static constexpr unsigned int SustainScorePerBeat = 12;
 
 	#pragma endregion
 
@@ -58,6 +62,8 @@ public:
 
 	void MissedValidNotes(unsigned int aCount);
 
+	void SustainProgress(const ChartData& aChartData, std::chrono::microseconds aStart, std::chrono::microseconds anEnd);
+
 	void Reset();
 
 	#pragma endregion
@@ -70,4 +76,6 @@ private:
 
 	unsigned int myNotesHit;
 	unsigned int myTotalNotes;
+
+	float myScoreFraction;
 };

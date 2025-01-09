@@ -22,7 +22,7 @@ void ChartController::HandleChartChange(const ChartData& aData)
 	myLastStrum.reset();
 }
 
-void ChartController::HandlePlayheadStep(const std::chrono::microseconds& /*aPrevious*/, const std::chrono::microseconds& aNew)
+void ChartController::HandlePlayheadStep(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew)
 {
 	auto reverseTime = [&aNew](std::chrono::microseconds aTimepoint)
 		{
@@ -47,6 +47,9 @@ void ChartController::HandlePlayheadStep(const std::chrono::microseconds& /*aPre
 
 		myActiveSustains.erase(activeSustainInLane);
 	}
+
+	for (std::size_t i = 0; i < myActiveSustains.size(); ++i)
+		myScoring.SustainProgress(*myCurrentChart, aPrevious, aNew);
 
 	myLastPlayhead = aNew;
 
