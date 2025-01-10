@@ -4,6 +4,7 @@
 #include "MidiDecoder.hpp"
 
 #include "Core_Diagnostics.hpp"
+#include "Core_Math.hpp"
 
 #define MIDI_DEFAULT_TEMPO (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)) * 120);
 
@@ -45,6 +46,27 @@ std::chrono::microseconds ChartData::GetBeatLengthAt(std::chrono::microseconds a
 	}
 
 	return currentTempo;
+}
+
+float ChartData::GetBeatsInPeriod(std::chrono::microseconds aFrom, std::chrono::microseconds aTo) const
+{
+	float totalBeats = 0.f;
+
+	for (std::size_t i = 0; i < myTempos.size(); ++i)
+	{
+		const TempoSection& tempoSection = myTempos.at(i);
+
+		const std::chrono::microseconds sectionOverlapStart = Atrium::Math::Max(aFrom, tempoSection.TimeStart);
+		const std::chrono::microseconds sectionOverlapEnd = (myTempos.size() > (i + 1) ? Atrium::Math::Min(aTo, myTempos.at(i + 1).TimeStart) : aTo);
+
+		if (sectionOverlapEnd <= sectionOverlapStart)
+			continue;
+
+		const std::chrono::microseconds overlapTime = sectionOverlapEnd - sectionOverlapStart;
+		totalBeats += static_cast<float>(overlapTime.count()) / static_cast<float>(tempoSection.TimePerBeat.count());
+	}
+
+	return totalBeats;
 }
 
 float ChartData::GetBPMAt(std::chrono::microseconds aTime) const

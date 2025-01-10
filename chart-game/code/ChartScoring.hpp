@@ -62,7 +62,7 @@ public:
 
 	void MissedValidNotes(unsigned int aCount);
 
-	void SustainProgress(const ChartData& aChartData, std::chrono::microseconds aStart, std::chrono::microseconds anEnd);
+	void SustainProgress(const ChartData& aChartData, std::chrono::microseconds aStart, std::chrono::microseconds anEnd, std::size_t aSustainCount = 1);
 
 	void Reset();
 

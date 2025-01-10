@@ -52,17 +52,12 @@ void ChartScoring::MissedValidNotes(unsigned int aCount)
 	myTotalNotes += aCount;
 }
 
-void ChartScoring::SustainProgress(const ChartData& aChartData, std::chrono::microseconds aStart, std::chrono::microseconds anEnd)
+void ChartScoring::SustainProgress(const ChartData& aChartData, std::chrono::microseconds aStart, std::chrono::microseconds anEnd, std::size_t aSustainCount)
 {
-	aChartData;
+	const float beatsInPeriod = aChartData.GetBeatsInPeriod(aStart, anEnd);
+	const float totalScoreForPeriod = (beatsInPeriod * ChartScoring::SustainScorePerBeat) * aSustainCount * myMultiplier;
 
-	// Todo: Implement proper scoring based on the beats.
-	// Currently implemented to just give points based on seconds of sustain progress.
-
-	const std::chrono::microseconds sustainProgress = anEnd - aStart;
-	static constexpr std::chrono::microseconds microsecondsPerSecond = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(1));
-
-	myScoreFraction += (static_cast<float>(sustainProgress.count()) / static_cast<float>(microsecondsPerSecond.count())) * ChartScoring::SustainScorePerBeat;
+	myScoreFraction += totalScoreForPeriod;
 	const unsigned int wholeScore = Atrium::Math::TruncateTo<unsigned int>(myScoreFraction);
 
 	myScoreFraction -= wholeScore;

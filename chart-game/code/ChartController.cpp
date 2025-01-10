@@ -202,8 +202,7 @@ void ChartController::UpdateActiveSustains(const std::chrono::microseconds& aPre
 		myActiveSustains.erase(activeSustainInLane);
 	}
 
-	for (std::size_t i = 0; i < myActiveSustains.size(); ++i)
-		myScoring.SustainProgress(*myCurrentChart, aPrevious, aNew);
+	myScoring.SustainProgress(*myCurrentChart, aPrevious, aNew, myActiveSustains.size());
 }
 
 bool ChartController::IsSustainActive(const ChartNoteRange& aNoteRange) const

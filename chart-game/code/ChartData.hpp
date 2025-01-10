@@ -97,6 +97,8 @@ public:
 public:
 	std::chrono::microseconds GetBeatLengthAt(std::chrono::microseconds aTime) const;
 
+	float GetBeatsInPeriod(std::chrono::microseconds aFrom, std::chrono::microseconds aTo) const;
+
 	float GetBPMAt(std::chrono::microseconds aTime) const;
 
 	std::chrono::microseconds GetDuration() const;
