@@ -62,7 +62,7 @@ void ChartController::HandlePlayheadStep(const std::chrono::microseconds& aPrevi
 		// If we seek backwards we don't want to keep going with the same state.
 		// Reset most things; similar to restarting and seeking forward.
 
-		myScoring.Reset(); // If we go back we don't want to keep going with the same score.
+		myScoring.Reset();
 
 		myLaneStates.fill(false);
 		myLaneLastStrum.fill(std::chrono::microseconds(0));
