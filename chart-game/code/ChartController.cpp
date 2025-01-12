@@ -18,27 +18,44 @@ ChartController::ChartController()
 
 void ChartController::HandleChartChange(const ChartData& aData)
 {
+	myScoring.Reset();
 	myCurrentChart = &aData;
+
+	myLaneStates.fill(false);
+	myLaneLastStrum.fill(std::chrono::microseconds(0));
+
+	myLastPlayhead = std::chrono::microseconds(0);
 	myLastStrum.reset();
+
+	myLastLaneHitCheck.clear();
+	myActiveSustains.clear();
+	myHitNoteRanges.clear();
 }
 
 void ChartController::HandlePlayheadStep(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew)
 {
-	auto reverseTime = [&aNew](std::chrono::microseconds aTimepoint)
+	if (aNew >= aPrevious)
 		{
-			return Atrium::Math::Min(aTimepoint, aNew);
-		};
+		UpdateActiveSustains(aPrevious, aNew);
+		CheckUnhitNotes(aNew);
+	}
+	else
+	{
+		// If we seek backwards we don't want to keep going with the same state.
+		// Reset most things; similar to restarting and seeking forward.
 
-	for (auto& it : myLastLaneHitCheck)
-		it.second = reverseTime(it.second);
+		myScoring.Reset(); // If we go back we don't want to keep going with the same score.
 
-	myLastStrum = myLastStrum.transform(reverseTime);
+		myLaneStates.fill(false);
+		myLaneLastStrum.fill(std::chrono::microseconds(0));
+		myLastStrum.reset();
 
-	UpdateActiveSustains(aPrevious, aNew);
+		myLastLaneHitCheck.clear();
+		myActiveSustains.clear();
+		myHitNoteRanges.clear();
+	}
 
 	myLastPlayhead = aNew;
-
-	CheckUnhitNotes();
 }
 
 #if IS_IMGUI_ENABLED
@@ -149,7 +166,7 @@ void ChartController::CheckStrumHits()
 		myScoring.HitInvalidNotes();
 }
 
-void ChartController::CheckUnhitNotes()
+void ChartController::CheckUnhitNotes(std::chrono::microseconds aNewPlayhead)
 {
 	const ChartTrack* track = GetTrack();
 	if (track == nullptr)
@@ -165,10 +182,10 @@ void ChartController::CheckUnhitNotes()
 		if (!nextNote)
 			continue;
 
-		if ((nextNote->Start + NOTE_LOWEST_ACCURACY) < myLastPlayhead)
+		if ((nextNote->Start + NOTE_LOWEST_ACCURACY) < aNewPlayhead)
 		{
 			myScoring.MissedValidNotes(1);
-			myLastLaneHitCheck[lane] = myLastPlayhead;
+			myLastLaneHitCheck[lane] = aNewPlayhead;
 		}
 	}
 }
@@ -185,27 +202,27 @@ std::optional<float> ChartController::CalculateNoteAccuracy(std::chrono::microse
 	return accuracy;
 }
 
-void ChartController::UpdateActiveSustains(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew)
+void ChartController::UpdateActiveSustains(const std::chrono::microseconds& aPreviousPlayhead, const std::chrono::microseconds& aNewPlayhead)
 {
 	while (true)
 	{
 		const auto activeSustainInLane = std::find_if(
 			myActiveSustains.begin(),
 			myActiveSustains.end(),
-			[&aNew](const ChartNoteRange* aNote) { return aNote->End < aNew; }
+			[&aNewPlayhead](const ChartNoteRange* aNote) { return aNote->End < aNewPlayhead; }
 		);
 
 		if (activeSustainInLane == myActiveSustains.end())
 			break;
 
-		myScoring.SustainProgress(*myCurrentChart, aPrevious, (*activeSustainInLane)->End);
+		myScoring.SustainProgress(*myCurrentChart, aPreviousPlayhead, (*activeSustainInLane)->End);
 		myActiveSustains.erase(activeSustainInLane);
 	}
 
 	for (auto sustainIt : myActiveSustains)
-		myLaneLastStrum[sustainIt->Lane] = aNew;
+		myLaneLastStrum[sustainIt->Lane] = aNewPlayhead;
 
-	myScoring.SustainProgress(*myCurrentChart, aPrevious, aNew, myActiveSustains.size());
+	myScoring.SustainProgress(*myCurrentChart, aPreviousPlayhead, aNewPlayhead, myActiveSustains.size());
 }
 
 bool ChartController::IsSustainActive(const ChartNoteRange& aNoteRange) const

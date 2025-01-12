@@ -61,11 +61,11 @@ private:
 
 	void CheckTapHit(std::uint8_t aLane);
 	void CheckStrumHits();
-	void CheckUnhitNotes();
+	void CheckUnhitNotes(std::chrono::microseconds aNewPlayhead);
 
 	std::optional<float> CalculateNoteAccuracy(std::chrono::microseconds aPerfectTimepoint, std::chrono::microseconds aHitTimepoint) const;
 
-	void UpdateActiveSustains(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew);
+	void UpdateActiveSustains(const std::chrono::microseconds& aPreviousPlayhead, const std::chrono::microseconds& aNewPlayhead);
 
 	ChartScoring myScoring;
 	ChartTrackType myTrackType;
