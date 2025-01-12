@@ -202,6 +202,9 @@ void ChartController::UpdateActiveSustains(const std::chrono::microseconds& aPre
 		myActiveSustains.erase(activeSustainInLane);
 	}
 
+	for (auto sustainIt : myActiveSustains)
+		myLaneLastStrum[sustainIt->Lane] = aNew;
+
 	myScoring.SustainProgress(*myCurrentChart, aPrevious, aNew, myActiveSustains.size());
 }
 
@@ -277,15 +280,6 @@ void ChartController::Strum()
 	for (std::size_t i = 0; i < myLaneStates.size(); ++i)
 	{
 		if (!myLaneStates[i])
-			continue;
-
-		const auto sustainIterator = std::find_if(
-			myActiveSustains.cbegin(),
-			myActiveSustains.cend(),
-			[i](const ChartNoteRange* aNote) { return aNote->Lane == i; }
-		);
-
-		if (sustainIterator != myActiveSustains.cend())
 			continue;
 
 		myLaneLastStrum[i] = myLastPlayhead;
