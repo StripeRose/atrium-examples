@@ -6,13 +6,34 @@
 #include "ChartPlayer.hpp"
 #include "ChartTrack.hpp"
 
+#include "Editor_GUI.hpp"
+
 #include "FretAtlas.hpp"
 
-#define LOOKAHEAD std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(3))
+static std::chrono::microseconds LookAhead = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(3));
+static float NotePositionAdjustment = 0.015f;
+static float SustainPositionAdjustment = 0.0f;
 
 ChartRenderer::ChartRenderer(ChartPlayer& aPlayer)
 	: myPlayer(aPlayer)
 { }
+
+#if IS_IMGUI_ENABLED
+void ChartRenderer::ImGui()
+{
+	ImGui::TextUnformatted("Adjust");
+	
+	{
+		int lookaheadMicroseconds = static_cast<int>(LookAhead.count());
+		const auto lookaheadSeconds = std::chrono::duration_cast<std::chrono::seconds>(LookAhead);
+		if (ImGui::SliderInt("Debug look-ahead", &lookaheadMicroseconds, 0, static_cast<int>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(15)).count()), std::format("{} seconds", lookaheadSeconds.count()).c_str()))
+			LookAhead = std::chrono::microseconds(lookaheadMicroseconds);
+	}
+
+	ImGui::DragFloat("Note position:", &NotePositionAdjustment, 0.0001f);
+	ImGui::DragFloat("Sustain position:", &SustainPositionAdjustment, 0.0001f);
+}
+#endif
 
 void ChartRenderer::SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atrium::Core::GraphicsFormat aColorTargetFormat)
 {
@@ -204,7 +225,7 @@ void ChartRenderer::RenderNotes(ChartController& aController, const ChartGuitarT
 
 void ChartRenderer::RenderNote_Guitar(const ChartNoteRange& aNote)
 {
-	const float notePosition = TimeToPositionOffset(aNote.Start);
+	const float notePosition = TimeToPositionOffset(aNote.Start) + NotePositionAdjustment;
 
 	if (notePosition < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < notePosition)
 		return;
@@ -249,7 +270,7 @@ void ChartRenderer::RenderNote_Guitar(const ChartNoteRange& aNote)
 
 void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
 {
-	const float notePosition = TimeToPositionOffset(aNote.Start);
+	const float notePosition = TimeToPositionOffset(aNote.Start) + NotePositionAdjustment;
 
 	if (notePosition < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < notePosition)
 		return;
@@ -271,8 +292,8 @@ void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
 
 void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool isActive)
 {
-	const float sustainStart = TimeToPositionOffset(aNote.Start);
-	const float sustainEnd = TimeToPositionOffset(aNote.End);
+	const float sustainStart = TimeToPositionOffset(aNote.Start) + SustainPositionAdjustment;
+	const float sustainEnd = TimeToPositionOffset(aNote.End) + SustainPositionAdjustment;
 
 	if (sustainEnd < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < sustainStart)
 		return;
@@ -312,8 +333,8 @@ void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool i
 
 void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
 {
-	const float sustainStart = TimeToPositionOffset(aNote.Start);
-	const float sustainEnd = TimeToPositionOffset(aNote.End);
+	const float sustainStart = TimeToPositionOffset(aNote.Start) + SustainPositionAdjustment;
+	const float sustainEnd = TimeToPositionOffset(aNote.End) + SustainPositionAdjustment;
 
 	if (sustainEnd < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < sustainStart)
 		return;
@@ -392,7 +413,7 @@ void ChartRenderer::QueueTargets(ChartController& aController)
 float ChartRenderer::TimeToPositionOffset(std::chrono::microseconds aTime) const
 {
 	const auto relativeToPlayhead = aTime - myPlayer.GetPlayhead();
-	const float playheadToLookahead = static_cast<float>(relativeToPlayhead.count()) / static_cast<float>(LOOKAHEAD.count());
+	const float playheadToLookahead = static_cast<float>(relativeToPlayhead.count()) / static_cast<float>(LookAhead.count());
 
 	return Atrium::Math::Lerp(
 		0.f,

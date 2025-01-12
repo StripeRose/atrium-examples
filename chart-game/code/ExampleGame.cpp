@@ -4,7 +4,7 @@
 
 ExampleGame::ExampleGame(Atrium::EngineInstance& anEngineInstance)
 	: myEngineInstance(anEngineInstance)
-	, myChartTestWindow(myChartPlayer)
+	, myChartTestWindow(myChartPlayer, myChartRenderer)
 	, myChartRenderer(myChartPlayer)
 {
 	myEngineInstance.OnStart.Connect(this, [&]() { HandleStart(); });

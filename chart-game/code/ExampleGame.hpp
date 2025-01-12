@@ -3,6 +3,7 @@
 #include <Core_InputEvent.hpp>
 #include <Engine_Instance.hpp>
 
+#include "ChartPlayer.hpp"
 #include "ChartRenderer.hpp"
 #include "ChartTestWindow.hpp"
 #include "Mesh.hpp"

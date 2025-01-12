@@ -2,7 +2,6 @@
 #pragma once
 
 #include "ChartData.hpp"
-#include "ChartPlayer.hpp"
 
 #include "Core_Math.hpp"
 
@@ -17,10 +16,13 @@ struct ImGui_ChartDrawParameters
 	std::function<float(std::chrono::microseconds aTime)> TimeToPoint;
 };
 
+class ChartController;
+class ChartPlayer;
+class ChartRenderer;
 class ChartTestWindow
 {
 public:
-	ChartTestWindow(ChartPlayer& aPlayer);
+	ChartTestWindow(ChartPlayer& aPlayer, ChartRenderer& aRenderer);
 
 	void ImGui();
 
@@ -70,6 +72,7 @@ private:
 
 	ChartData myChartData;
 	ChartPlayer& myChartPlayer;
+	ChartRenderer& myChartRenderer;
 	std::map<ChartTrackType, TrackSettings> myTrackSettings;
 	std::chrono::microseconds myLookAhead;
 };

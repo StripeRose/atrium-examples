@@ -22,6 +22,10 @@ class ChartRenderer
 public:
 	ChartRenderer(ChartPlayer& aPlayer);
 
+	#if IS_IMGUI_ENABLED
+	void ImGui();
+	#endif
+
 	void SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atrium::Core::GraphicsFormat aColorTargetFormat);
 
 	void Render(Atrium::Core::FrameGraphicsContext& aContext, const std::shared_ptr<Atrium::Core::RenderTexture>& aTarget);

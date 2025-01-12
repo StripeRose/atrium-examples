@@ -4,6 +4,8 @@
 #include "ChartAIController.hpp"
 #include "ChartData.hpp"
 #include "ChartHumanController.hpp"
+#include "ChartPlayer.hpp"
+#include "ChartRenderer.hpp"
 #include "ChartTrack.hpp"
 
 #include "Core_Diagnostics.hpp"
@@ -48,9 +50,10 @@
 #define HIT_WINDOW_OFFSET 30.f
 #endif
 
-ChartTestWindow::ChartTestWindow(ChartPlayer& aPlayer)
+ChartTestWindow::ChartTestWindow(ChartPlayer& aPlayer, ChartRenderer& aRenderer)
 	: myLookAhead(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(5)))
 	, myChartPlayer(aPlayer)
+	, myChartRenderer(aRenderer)
 {
 }
 
@@ -87,6 +90,12 @@ void ChartTestWindow::ImGui()
 			if (ImGui::BeginTabItem("Tracks"))
 			{
 				ImGui_Tracks();
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Renderer"))
+			{
+				myChartRenderer.ImGui();
 				ImGui::EndTabItem();
 			}
 
