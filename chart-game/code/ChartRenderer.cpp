@@ -211,9 +211,19 @@ void ChartRenderer::RenderNotes(ChartController& aController, const ChartGuitarT
 		const std::optional<std::chrono::microseconds> sustainHitEnd = aController.GetNoteHitEnd(note);
 
 		if (note.CanBeOpen && aController.AllowOpenNotes())
+		{
 			RenderNote_GuitarOpenSustain(note, sustainHitEnd);
+		}
 		else
-			RenderNote_GuitarSustain(note, aController.IsSustainActive(note), sustainHitEnd);
+		{
+			SustainState state = SustainState::Neutral;
+			if (aController.IsSustainActive(note))
+				state = SustainState::Active;
+			else if (aController.IsNoteMissed(note))
+				state = SustainState::Missed;
+
+			RenderNote_GuitarSustain(note, state, sustainHitEnd);
+		}
 	}
 
 	for (auto note = difficultyNotes.crbegin(); note != difficultyNotes.crend(); ++note)
@@ -295,7 +305,7 @@ void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
 	myQuadRenderer.Queue(noteTransform, {}, FretAtlas::Note_Open_Cap_Neutral);
 }
 
-void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool isActive, std::optional<std::chrono::microseconds> anOverrideStart)
+void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote, SustainState aState, std::optional<std::chrono::microseconds> anOverrideStart)
 {
 	const float sustainStart = TimeToPositionOffset(anOverrideStart.value_or(aNote.Start)) + SustainPositionAdjustment;
 	const float sustainEnd = TimeToPositionOffset(aNote.End) + SustainPositionAdjustment;
@@ -333,7 +343,22 @@ void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool i
 		Atrium::Vector4::UnitZ() * (FretboardMatrices::TargetOffset + 0.04f + sustainStart)
 	);
 
-	myQuadRenderer.Queue(sustainTransform, noteColor, isActive ? FretAtlas::Sustain_Active : FretAtlas::Sustain_Neutral);
+	Atrium::RectangleF sustainRect = FretAtlas::Sustain_Neutral;
+
+	switch (aState)
+	{
+		case SustainState::Missed:
+			sustainRect = FretAtlas::Sustain_Missed;
+			break;
+		case SustainState::Neutral:
+			sustainRect = FretAtlas::Sustain_Neutral;
+			break;
+		case SustainState::Active:
+			sustainRect = FretAtlas::Sustain_Active;
+			break;
+	}
+
+	myQuadRenderer.Queue(sustainTransform, noteColor, sustainRect);
 }
 
 void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote, std::optional<std::chrono::microseconds> anOverrideStart)

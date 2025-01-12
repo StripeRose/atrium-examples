@@ -31,6 +31,8 @@ public:
 	void Render(Atrium::Core::FrameGraphicsContext& aContext, const std::shared_ptr<Atrium::Core::RenderTexture>& aTarget);
 
 private:
+	enum class SustainState { Missed, Neutral, Active };
+
 	std::pair<int, int> GetControllerRectanglesGrid(const Atrium::RectangleF& aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const;
 	std::vector<Atrium::RectangleF> GetControllerRectangles(const Atrium::RectangleF& aTotalRectangle, std::size_t aControllerCount) const;
 
@@ -39,7 +41,7 @@ private:
 
 	void RenderNote_Guitar(const ChartNoteRange& aNote);
 	void RenderNote_GuitarOpen(const ChartNoteRange& aNote);
-	void RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool isActive, std::optional<std::chrono::microseconds> anOverrideStart = {});
+	void RenderNote_GuitarSustain(const ChartNoteRange& aNote, SustainState aState, std::optional<std::chrono::microseconds> anOverrideStart = {});
 	void RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote, std::optional<std::chrono::microseconds> anOverrideStart = {});
 
 	void QueueTargets(ChartController& aController);

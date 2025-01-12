@@ -45,6 +45,7 @@ public:
 	#endif
 
 	bool IsSustainActive(const ChartNoteRange& aNoteRange) const;
+	bool IsNoteMissed(const ChartNoteRange& aNoteRange) const;
 
 	virtual void SetTrackType(ChartTrackType aType);
 	virtual void SetTrackDifficulty(ChartTrackDifficulty aDifficulty);

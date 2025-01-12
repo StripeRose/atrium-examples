@@ -266,6 +266,14 @@ bool ChartController::IsSustainActive(const ChartNoteRange& aNoteRange) const
 	return activeSustain != myActiveSustains.end();
 }
 
+bool ChartController::IsNoteMissed(const ChartNoteRange& aNoteRange) const
+{
+	if (myLastPlayhead < aNoteRange.Start)
+		return false;
+
+	return !CalculateNoteAccuracy(aNoteRange.Start, myLastPlayhead).has_value();
+}
+
 void ChartController::SetTrackType(ChartTrackType aType)
 {
 	myTrackType = aType;
