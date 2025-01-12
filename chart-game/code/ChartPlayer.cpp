@@ -78,6 +78,9 @@ void ChartPlayer::Seek(std::chrono::microseconds aPlayTime)
 		return;
 	}
 
+	for (const std::unique_ptr<ChartController>& controller : myControllers)
+		controller->HandlePlayheadStep(myPlayhead, aPlayTime);
+
 	myPlayhead = aPlayTime;
 }
 
