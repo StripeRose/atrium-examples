@@ -16,6 +16,24 @@ ChartController::ChartController()
 	myLaneStates.fill(false);
 }
 
+std::optional<std::chrono::microseconds> ChartController::GetNoteHitEnd(const ChartNoteRange& aNoteRange) const
+{
+	for (const auto it : myHitNoteRanges)
+	{
+		const bool isSame
+			= (it.first == &aNoteRange)
+			|| (it.first->Lane == aNoteRange.Lane
+			&& it.first->Start == aNoteRange.Start
+			&& it.first->End == aNoteRange.End)
+			;
+
+		if (isSame)
+			return it.second;
+	}
+
+	return { };
+}
+
 void ChartController::HandleChartChange(const ChartData& aData)
 {
 	myScoring.Reset();
@@ -35,7 +53,7 @@ void ChartController::HandleChartChange(const ChartData& aData)
 void ChartController::HandlePlayheadStep(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew)
 {
 	if (aNew >= aPrevious)
-		{
+	{
 		UpdateActiveSustains(aPrevious, aNew);
 		CheckUnhitNotes(aNew);
 	}
@@ -116,6 +134,7 @@ void ChartController::CheckTapHit(std::uint8_t aLane)
 	if (nextNote->IsSustain())
 		myActiveSustains.insert(nextNote);
 
+	myHitNoteRanges[nextNote] = nextNote->IsSustain() ? nextNote->Start : nextNote->End;
 	myScoring.HitValidNotes(1);
 	myLastLaneHitCheck[aLane] = myLastPlayhead;
 }
@@ -152,6 +171,7 @@ void ChartController::CheckStrumHits()
 			if (nextNote->IsSustain())
 				myActiveSustains.insert(nextNote);
 
+			myHitNoteRanges[nextNote] = nextNote->IsSustain() ? nextNote->Start : nextNote->End;
 			myScoring.HitValidNotes(1);
 		}
 		else
@@ -203,7 +223,10 @@ std::optional<float> ChartController::CalculateNoteAccuracy(std::chrono::microse
 }
 
 void ChartController::UpdateActiveSustains(const std::chrono::microseconds& aPreviousPlayhead, const std::chrono::microseconds& aNewPlayhead)
-{
+{	
+	for (auto sustainIt : myActiveSustains)
+		myHitNoteRanges[sustainIt] = aNewPlayhead;
+
 	while (true)
 	{
 		const auto activeSustainInLane = std::find_if(

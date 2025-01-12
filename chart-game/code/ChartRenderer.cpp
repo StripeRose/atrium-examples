@@ -208,14 +208,19 @@ void ChartRenderer::RenderNotes(ChartController& aController, const ChartGuitarT
 		if (!note.IsSustain())
 			continue;
 
+		const std::optional<std::chrono::microseconds> sustainHitEnd = aController.GetNoteHitEnd(note);
+
 		if (note.CanBeOpen && aController.AllowOpenNotes())
-			RenderNote_GuitarOpenSustain(note);
+			RenderNote_GuitarOpenSustain(note, sustainHitEnd);
 		else
-			RenderNote_GuitarSustain(note, aController.IsSustainActive(note));
+			RenderNote_GuitarSustain(note, aController.IsSustainActive(note), sustainHitEnd);
 	}
 
 	for (auto note = difficultyNotes.crbegin(); note != difficultyNotes.crend(); ++note)
 	{
+		if (aController.GetNoteHitEnd(*note).has_value())
+			continue;
+
 		if (note->CanBeOpen && aController.AllowOpenNotes())
 			RenderNote_GuitarOpen(*note);
 		else
@@ -290,9 +295,9 @@ void ChartRenderer::RenderNote_GuitarOpen(const ChartNoteRange& aNote)
 	myQuadRenderer.Queue(noteTransform, {}, FretAtlas::Note_Open_Cap_Neutral);
 }
 
-void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool isActive)
+void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool isActive, std::optional<std::chrono::microseconds> anOverrideStart)
 {
-	const float sustainStart = TimeToPositionOffset(aNote.Start) + SustainPositionAdjustment;
+	const float sustainStart = TimeToPositionOffset(anOverrideStart.value_or(aNote.Start)) + SustainPositionAdjustment;
 	const float sustainEnd = TimeToPositionOffset(aNote.End) + SustainPositionAdjustment;
 
 	if (sustainEnd < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < sustainStart)
@@ -331,9 +336,9 @@ void ChartRenderer::RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool i
 	myQuadRenderer.Queue(sustainTransform, noteColor, isActive ? FretAtlas::Sustain_Active : FretAtlas::Sustain_Neutral);
 }
 
-void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote)
+void ChartRenderer::RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote, std::optional<std::chrono::microseconds> anOverrideStart)
 {
-	const float sustainStart = TimeToPositionOffset(aNote.Start) + SustainPositionAdjustment;
+	const float sustainStart = TimeToPositionOffset(anOverrideStart.value_or(aNote.Start)) + SustainPositionAdjustment;
 	const float sustainEnd = TimeToPositionOffset(aNote.End) + SustainPositionAdjustment;
 
 	if (sustainEnd < -FretboardMatrices::TargetOffset || (FretboardLength - FretboardMatrices::TargetOffset) < sustainStart)

@@ -25,6 +25,8 @@ public:
 
 	virtual const char* GetName() const = 0;
 
+	std::optional<std::chrono::microseconds> GetNoteHitEnd(const ChartNoteRange& aNoteRange) const;
+
 	std::span<const bool> GetLaneStates() const { return myLaneStates; }
 	std::span<const std::chrono::microseconds> GetLaneLastStrum() const { return myLaneLastStrum; }
 	const std::optional<std::chrono::microseconds>& GetLastStrum() const { return myLastStrum; }
@@ -83,6 +85,5 @@ private:
 
 	std::set<const ChartNoteRange*> myActiveSustains;
 
-	// Includes timepoint where the miss began, for use with sustains.
-	std::map<const ChartNoteRange*, std::chrono::microseconds> myMissedNoteStarts;
+	std::map<const ChartNoteRange*, std::chrono::microseconds> myHitNoteRanges;
 };

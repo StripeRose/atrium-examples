@@ -39,8 +39,8 @@ private:
 
 	void RenderNote_Guitar(const ChartNoteRange& aNote);
 	void RenderNote_GuitarOpen(const ChartNoteRange& aNote);
-	void RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool isActive);
-	void RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote);
+	void RenderNote_GuitarSustain(const ChartNoteRange& aNote, bool isActive, std::optional<std::chrono::microseconds> anOverrideStart = {});
+	void RenderNote_GuitarOpenSustain(const ChartNoteRange& aNote, std::optional<std::chrono::microseconds> anOverrideStart = {});
 
 	void QueueTargets(ChartController& aController);
 
