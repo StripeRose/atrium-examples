@@ -7,7 +7,7 @@
 
 #include "Editor_GUI.hpp"
 
-#define NOTE_LOWEST_ACCURACY std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(50))
+static std::chrono::microseconds NoteLowestAccuracy = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(300));
 
 ChartController::ChartController()
 	: myTrackDifficulty(ChartTrackDifficulty::Hard)
@@ -95,6 +95,10 @@ void ChartController::ImGui(ChartTestWindow& aTestWindow)
 	{
 		SetTrackDifficulty(ChartTrackDifficulty(currentDifficulty));
 	}
+
+	int currentLowestAccuracyMilliseconds = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(NoteLowestAccuracy).count());
+	if (ImGui::InputInt("Lowest accuracy (ms): ", &currentLowestAccuracyMilliseconds, 50, 500))
+		NoteLowestAccuracy = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(currentLowestAccuracyMilliseconds));
 }
 
 void ChartController::ImGui_Scoring()
@@ -202,7 +206,7 @@ void ChartController::CheckUnhitNotes(std::chrono::microseconds aNewPlayhead)
 		if (!nextNote)
 			continue;
 
-		if ((nextNote->Start + NOTE_LOWEST_ACCURACY) < aNewPlayhead)
+		if ((nextNote->Start + NoteLowestAccuracy) < aNewPlayhead)
 		{
 			myScoring.MissedValidNotes(1);
 			myLastLaneHitCheck[lane] = aNewPlayhead;
@@ -212,9 +216,9 @@ void ChartController::CheckUnhitNotes(std::chrono::microseconds aNewPlayhead)
 
 std::optional<float> ChartController::CalculateNoteAccuracy(std::chrono::microseconds aPerfectTimepoint, std::chrono::microseconds aHitTimepoint) const
 {
-	const std::chrono::microseconds accuracyMilliseconds = aHitTimepoint - aPerfectTimepoint;
+	const std::chrono::microseconds accuracyMilliseconds = Atrium::Math::Abs(aHitTimepoint - aPerfectTimepoint);
 
-	const float accuracy = 1 - (static_cast<float>(accuracyMilliseconds.count()) / static_cast<float>(NOTE_LOWEST_ACCURACY.count()));
+	const float accuracy = 1 - (static_cast<float>(accuracyMilliseconds.count()) / static_cast<float>(NoteLowestAccuracy.count()));
 
 	if (accuracy < 0.f || accuracy > 1.f)
 		return { };
