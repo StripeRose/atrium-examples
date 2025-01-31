@@ -26,9 +26,9 @@ public class ChartGame_Executable : Atrium.ExecutableProject
 }
 
 [Sharpmake.Generate]
-public class ChartGame_CoreOnlySolution : Atrium.Solution
+public class ChartGameSolution : Atrium.Solution
 {
-    public ChartGame_CoreOnlySolution()
+    public ChartGameSolution()
     {
         Name = "Chart game";
     }
@@ -55,6 +55,6 @@ public static class Main
             "build"
         );
         
-        arguments.Generate<ChartGame_CoreOnlySolution>();
+        arguments.Generate<ChartGameSolution>();
     }
 }
