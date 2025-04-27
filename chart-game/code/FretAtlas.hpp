@@ -1,7 +1,7 @@
 // Filter "Chart/Rendering"
 
-#include "Core_Color.hpp"
-#include "Core_Math.hpp"
+#include "Atrium_Color.hpp"
+#include "Atrium_Math.hpp"
 
 #include "ChartMeshes.hpp"
 

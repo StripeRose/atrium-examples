@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "Core_GraphicsBuffer.hpp"
-#include "Core_GraphicsAPI.hpp"
-#include "Core_GraphicsPipeline.hpp"
+#include "Atrium_GraphicsBuffer.hpp"
+#include "Atrium_GraphicsAPI.hpp"
+#include "Atrium_GraphicsPipeline.hpp"
 
 class Mesh
 {

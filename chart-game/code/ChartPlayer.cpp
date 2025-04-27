@@ -2,7 +2,7 @@
 #include "ChartPlayer.hpp"
 
 #include "ChartData.hpp"
-#include "Core_Diagnostics.hpp"
+#include "Atrium_Diagnostics.hpp"
 
 ChartPlayer::State ChartPlayer::GetState() const
 {

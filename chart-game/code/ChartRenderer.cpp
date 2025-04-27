@@ -6,7 +6,7 @@
 #include "ChartPlayer.hpp"
 #include "ChartTrack.hpp"
 
-#include "Editor_GUI.hpp"
+#include "Atrium_GUI.hpp"
 
 #include "FretAtlas.hpp"
 

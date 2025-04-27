@@ -3,8 +3,8 @@
 
 #include "MidiDecoder.hpp"
 
-#include "Core_Diagnostics.hpp"
-#include "Core_Math.hpp"
+#include "Atrium_Diagnostics.hpp"
+#include "Atrium_Math.hpp"
 
 void ChartTrackLoadData::AddNote(std::chrono::microseconds aTime, std::uint8_t aNote, std::uint8_t aVelocity)
 {

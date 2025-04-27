@@ -7,9 +7,9 @@
 #include "ChartQuadRenderer.hpp"
 #include "Mesh.hpp"
 
-#include "Core_Math.hpp"
+#include "Atrium_Math.hpp"
 
-#include "Core_FrameContext.hpp"
+#include "Atrium_FrameContext.hpp"
 
 class ChartController;
 class ChartGuitarTrack;

@@ -4,7 +4,7 @@
 #include "ChartCommonStructures.hpp"
 #include "ChartScoring.hpp"
 
-#include <Core_InputEvent.hpp>
+#include <Atrium_InputEvent.hpp>
 
 #include <array>
 #include <chrono>

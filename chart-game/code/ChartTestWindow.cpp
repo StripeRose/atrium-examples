@@ -8,10 +8,10 @@
 #include "ChartRenderer.hpp"
 #include "ChartTrack.hpp"
 
-#include "Core_Diagnostics.hpp"
+#include "Atrium_Diagnostics.hpp"
 
-#include "Editor_FileDialog.hpp"
-#include "Editor_GUI.hpp"
+#include "Atrium_FileDialog.hpp"
+#include "Atrium_GUI.hpp"
 
 #include <algorithm>
 #include <array>

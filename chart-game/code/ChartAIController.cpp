@@ -4,9 +4,9 @@
 #include "ChartData.hpp"
 #include "ChartTestWindow.hpp"
 
-#include "Core_Diagnostics.hpp"
+#include "Atrium_Diagnostics.hpp"
 
-#include "Editor_GUI.hpp"
+#include "Atrium_GUI.hpp"
 
 void ChartAIController::HandleChartChange(const ChartData& aData)
 {

@@ -4,7 +4,7 @@
 
 #include "ChartData.hpp"
 
-#include <Core_Math.hpp>
+#include <Atrium_Math.hpp>
 
 ChartScoring::ChartScoring()
 {

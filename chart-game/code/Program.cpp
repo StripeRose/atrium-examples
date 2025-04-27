@@ -1,6 +1,6 @@
 #include "ExampleGame.hpp"
 
-#include <Engine_Instance.hpp>
+#include <Atrium_Instance.hpp>
 
 #include <Windows.h>
 

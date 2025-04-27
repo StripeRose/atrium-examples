@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Core_InputEvent.hpp>
-#include <Engine_Instance.hpp>
+#include <Atrium_InputEvent.hpp>
+#include <Atrium_Instance.hpp>
 
 #include "ChartPlayer.hpp"
 #include "ChartRenderer.hpp"

@@ -3,9 +3,9 @@
 
 #include "ChartTestWindow.hpp"
 
-#include "Core_Diagnostics.hpp"
+#include "Atrium_Diagnostics.hpp"
 
-#include "Editor_GUI.hpp"
+#include "Atrium_GUI.hpp"
 
 static std::chrono::microseconds NoteLowestAccuracy = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(300));
 

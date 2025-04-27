@@ -3,8 +3,8 @@
 
 #include "MidiDecoder.hpp"
 
-#include "Core_Diagnostics.hpp"
-#include "Core_Math.hpp"
+#include "Atrium_Diagnostics.hpp"
+#include "Atrium_Math.hpp"
 
 #define MIDI_DEFAULT_TEMPO (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)) * 120);
 
