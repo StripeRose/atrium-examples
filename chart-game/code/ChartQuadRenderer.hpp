@@ -12,15 +12,15 @@ public:
 	void Flush(std::size_t aGroupID);
 
 	void Setup(
-		Atrium::Core::GraphicsAPI& aGraphicsAPI,
-		const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature,
-		Atrium::Core::GraphicsFormat aColorTargetFormat
+		Atrium::GraphicsAPI& aGraphicsAPI,
+		const std::shared_ptr<Atrium::RootSignature>& aRootSignature,
+		Atrium::GraphicsFormat aColorTargetFormat
 	);
 
-	void SetTexture(std::shared_ptr<Atrium::Core::Texture> aTexture);
+	void SetTexture(std::shared_ptr<Atrium::Texture> aTexture);
 
 	void Render(
-		Atrium::Core::FrameGraphicsContext& aContext,
+		Atrium::FrameGraphicsContext& aContext,
 		std::function<void(std::size_t)> aGroupPreparation
 	);
 
@@ -32,10 +32,10 @@ public:
 
 private:
 	std::unique_ptr<Mesh> myQuadMesh;
-	std::shared_ptr<Atrium::Core::PipelineState> myQuadPipelineState;
+	std::shared_ptr<Atrium::PipelineState> myQuadPipelineState;
 
 	std::vector<ChartQuadInstance> myQuadInstanceData;
-	std::shared_ptr<Atrium::Core::GraphicsBuffer> myQuadInstanceBuffer;
+	std::shared_ptr<Atrium::GraphicsBuffer> myQuadInstanceBuffer;
 	std::size_t myLastQuadFlush = 0;
 
 	struct QuadInstanceGroup
@@ -46,6 +46,6 @@ private:
 	};
 	std::vector<QuadInstanceGroup> myQuadGroups;
 
-	std::shared_ptr<Atrium::Core::GraphicsBuffer> myCameraMatrices;
-	std::shared_ptr<Atrium::Core::Texture> myTexture;
+	std::shared_ptr<Atrium::GraphicsBuffer> myCameraMatrices;
+	std::shared_ptr<Atrium::Texture> myTexture;
 };

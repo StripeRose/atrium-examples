@@ -21,9 +21,9 @@ void ChartQuadRenderer::Flush(std::size_t aGroupID)
 }
 
 void ChartQuadRenderer::Setup(
-	Atrium::Core::GraphicsAPI& aGraphicsAPI,
-	const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature,
-	Atrium::Core::GraphicsFormat aColorTargetFormat
+	Atrium::GraphicsAPI& aGraphicsAPI,
+	const std::shared_ptr<Atrium::RootSignature>& aRootSignature,
+	Atrium::GraphicsFormat aColorTargetFormat
 	)
 {
 	ZoneScoped;
@@ -31,12 +31,12 @@ void ChartQuadRenderer::Setup(
 	myQuadMesh = CreateQuadMesh(aGraphicsAPI);
 	myQuadMesh->SetName(L"Quad");
 
-	Atrium::Core::PipelineStateDescription pipelineDescription;
+	Atrium::PipelineStateDescription pipelineDescription;
 	pipelineDescription.RootSignature = aRootSignature;
 	pipelineDescription.InputLayout = ChartQuadVertex::GetInputLayout();
 	const std::filesystem::path shaderPath = "ChartQuad.hlsl";
-	pipelineDescription.VertexShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, Atrium::Core::Shader::Type::Vertex, "vertexShader");
-	pipelineDescription.PixelShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, Atrium::Core::Shader::Type::Pixel, "pixelShader");
+	pipelineDescription.VertexShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, Atrium::Shader::Type::Vertex, "vertexShader");
+	pipelineDescription.PixelShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, Atrium::Shader::Type::Pixel, "pixelShader");
 	pipelineDescription.OutputFormats = { aColorTargetFormat };
 	pipelineDescription.BlendMode.BlendFactors[0].Enabled = true;
 
@@ -50,18 +50,18 @@ void ChartQuadRenderer::Setup(
 	cameraMatrices.View = FretboardMatrices::CameraViewMatrix;
 	cameraMatrices.Projection = FretboardMatrices::CameraProjectionMatrix;
 
-	myCameraMatrices = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(Atrium::Core::GraphicsBuffer::Target::Constant, 1, sizeof(CameraMatrices));
+	myCameraMatrices = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(Atrium::GraphicsBuffer::Target::Constant, 1, sizeof(CameraMatrices));
 	myCameraMatrices->SetData(&cameraMatrices, sizeof(CameraMatrices));
 
-	myQuadInstanceBuffer = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(Atrium::Core::GraphicsBuffer::Target::Vertex, 512, sizeof(ChartQuadInstance));
+	myQuadInstanceBuffer = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(Atrium::GraphicsBuffer::Target::Vertex, 512, sizeof(ChartQuadInstance));
 }
 
-void ChartQuadRenderer::SetTexture(std::shared_ptr<Atrium::Core::Texture> aTexture)
+void ChartQuadRenderer::SetTexture(std::shared_ptr<Atrium::Texture> aTexture)
 {
 	myTexture = aTexture;
 }
 
-void ChartQuadRenderer::Render(Atrium::Core::FrameGraphicsContext& aContext, std::function<void(std::size_t)> aGroupPreparation)
+void ChartQuadRenderer::Render(Atrium::FrameGraphicsContext& aContext, std::function<void(std::size_t)> aGroupPreparation)
 {
 	ZoneScoped;
 	CONTEXT_ZONE(aContext, "Render quads");
@@ -69,8 +69,8 @@ void ChartQuadRenderer::Render(Atrium::Core::FrameGraphicsContext& aContext, std
 	myQuadInstanceBuffer->SetData<ChartQuadInstance>(myQuadInstanceData);
 
 	aContext.SetPipelineState(myQuadPipelineState);
-	aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerFrame, 0, myCameraMatrices);
-	aContext.SetPipelineResource(Atrium::Core::ResourceUpdateFrequency::PerMaterial, 0, myTexture);
+	aContext.SetPipelineResource(Atrium::ResourceUpdateFrequency::PerFrame, 0, myCameraMatrices);
+	aContext.SetPipelineResource(Atrium::ResourceUpdateFrequency::PerMaterial, 0, myTexture);
 	aContext.SetVertexBuffer(myQuadInstanceBuffer, 1);
 
 	for (const QuadInstanceGroup& group : myQuadGroups)

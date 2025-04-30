@@ -35,33 +35,33 @@ void ChartRenderer::ImGui()
 }
 #endif
 
-void ChartRenderer::SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atrium::Core::GraphicsFormat aColorTargetFormat)
+void ChartRenderer::SetupResources(Atrium::GraphicsAPI& aGraphicsAPI, Atrium::GraphicsFormat aColorTargetFormat)
 {
 	ZoneScoped;
 
-	std::unique_ptr<Atrium::Core::RootSignatureBuilder> builder = aGraphicsAPI.GetResourceManager().CreateRootSignature();
+	std::unique_ptr<Atrium::RootSignatureBuilder> builder = aGraphicsAPI.GetResourceManager().CreateRootSignature();
 
-	builder->SetVisibility(Atrium::Core::Shader::Type::Vertex);
+	builder->SetVisibility(Atrium::Shader::Type::Vertex);
 
 	// Model, view, projection.
-	builder->AddTable().AddCBVRange(1, 0, Atrium::Core::ResourceUpdateFrequency::PerObject);
-	builder->AddTable().AddCBVRange(1, 0, Atrium::Core::ResourceUpdateFrequency::PerFrame);
+	builder->AddTable().AddCBVRange(1, 0, Atrium::ResourceUpdateFrequency::PerObject);
+	builder->AddTable().AddCBVRange(1, 0, Atrium::ResourceUpdateFrequency::PerFrame);
 
-	builder->SetVisibility(Atrium::Core::Shader::Type::Pixel);
+	builder->SetVisibility(Atrium::Shader::Type::Pixel);
 
-	builder->AddTable().AddSRVRange(4, 0, Atrium::Core::ResourceUpdateFrequency::PerMaterial);
+	builder->AddTable().AddSRVRange(4, 0, Atrium::ResourceUpdateFrequency::PerMaterial);
 
 	builder->AddSampler(0) // Clamping point
-		.Filter(Atrium::Core::FilterMode::Point)
-		.Address(Atrium::Core::TextureWrapMode::Clamp)
+		.Filter(Atrium::FilterMode::Point)
+		.Address(Atrium::TextureWrapMode::Clamp)
 		;
 
 	builder->AddSampler(1) // Clamping linear
-		.Filter(Atrium::Core::FilterMode::Bilinear)
-		.Address(Atrium::Core::TextureWrapMode::Clamp)
+		.Filter(Atrium::FilterMode::Bilinear)
+		.Address(Atrium::TextureWrapMode::Clamp)
 		;
 
-	std::shared_ptr<Atrium::Core::RootSignature> rootSignature = builder->Finalize();
+	std::shared_ptr<Atrium::RootSignature> rootSignature = builder->Finalize();
 
 	myQuadRenderer.Setup(aGraphicsAPI, rootSignature, aColorTargetFormat);
 	myQuadRenderer.SetTexture(aGraphicsAPI.GetResourceManager().LoadTexture("fretatlas.dds"));
@@ -70,7 +70,7 @@ void ChartRenderer::SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atri
 	myFretboardRenderer.SetTexture(aGraphicsAPI.GetResourceManager().LoadTexture("fretboard.dds"));
 }
 
-void ChartRenderer::Render(Atrium::Core::FrameGraphicsContext& aContext, const std::shared_ptr<Atrium::Core::RenderTexture>& aTarget)
+void ChartRenderer::Render(Atrium::FrameGraphicsContext& aContext, const std::shared_ptr<Atrium::RenderTexture>& aTarget)
 {
 	ZoneScoped;
 	CONTEXT_ZONE(aContext, "Chart");

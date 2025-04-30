@@ -29,7 +29,7 @@ private:
 
 	Atrium::EngineInstance& myEngineInstance;
 
-	std::shared_ptr<Atrium::Core::RenderTexture> myWindow1;
+	std::shared_ptr<Atrium::RenderTexture> myWindow1;
 
 	ChartTestWindow myChartTestWindow;
 	ChartRenderer myChartRenderer;

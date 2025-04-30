@@ -9,20 +9,20 @@
 class ChartFretboardRenderer
 {
 public:
-	void Render(Atrium::Core::FrameGraphicsContext& aContext);
+	void Render(Atrium::FrameGraphicsContext& aContext);
 
 	void Setup(
-		Atrium::Core::GraphicsAPI& aGraphicsAPI,
-		const std::shared_ptr<Atrium::Core::RootSignature>& aRootSignature,
-		Atrium::Core::GraphicsFormat aColorTargetFormat
+		Atrium::GraphicsAPI& aGraphicsAPI,
+		const std::shared_ptr<Atrium::RootSignature>& aRootSignature,
+		Atrium::GraphicsFormat aColorTargetFormat
 	);
 
-	void SetTexture(std::shared_ptr<Atrium::Core::Texture> aTexture);
+	void SetTexture(std::shared_ptr<Atrium::Texture> aTexture);
 
 private:
-	std::shared_ptr<Atrium::Core::Texture> myFretboardTexture;
+	std::shared_ptr<Atrium::Texture> myFretboardTexture;
 
 	std::unique_ptr<Mesh> myFretboardMesh;
-	std::shared_ptr<Atrium::Core::PipelineState> myFretboardPipelineState;
-	std::shared_ptr<Atrium::Core::GraphicsBuffer> myFretboardModelViewProjection;
+	std::shared_ptr<Atrium::PipelineState> myFretboardPipelineState;
+	std::shared_ptr<Atrium::GraphicsBuffer> myFretboardModelViewProjection;
 };

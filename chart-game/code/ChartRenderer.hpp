@@ -26,9 +26,9 @@ public:
 	void ImGui();
 	#endif
 
-	void SetupResources(Atrium::Core::GraphicsAPI& aGraphicsAPI, Atrium::Core::GraphicsFormat aColorTargetFormat);
+	void SetupResources(Atrium::GraphicsAPI& aGraphicsAPI, Atrium::GraphicsFormat aColorTargetFormat);
 
-	void Render(Atrium::Core::FrameGraphicsContext& aContext, const std::shared_ptr<Atrium::Core::RenderTexture>& aTarget);
+	void Render(Atrium::FrameGraphicsContext& aContext, const std::shared_ptr<Atrium::RenderTexture>& aTarget);
 
 private:
 	enum class SustainState { Missed, Neutral, Active };

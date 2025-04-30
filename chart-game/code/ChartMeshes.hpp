@@ -11,18 +11,18 @@ static constexpr float FretboardLength = 1.9212f;
 
 struct ChartFretboardVertex
 {
-	static std::vector<Atrium::Core::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
+	static std::vector<Atrium::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
 
 	float Position[3];
 	float UV[2];
 };
 using ChartFretboardMesh = MeshT<ChartFretboardVertex>;
 
-std::unique_ptr<Mesh> CreateFretboardMesh(Atrium::Core::GraphicsAPI& aGraphicsAPI);
+std::unique_ptr<Mesh> CreateFretboardMesh(Atrium::GraphicsAPI& aGraphicsAPI);
 
 struct ChartQuadVertex
 {
-	static std::vector<Atrium::Core::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
+	static std::vector<Atrium::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
 
 	float Position[3];
 };
@@ -37,4 +37,4 @@ struct ChartQuadInstance
 
 using ChartQuadMesh = MeshT<ChartQuadVertex>;
 
-std::unique_ptr<Mesh> CreateQuadMesh(Atrium::Core::GraphicsAPI& aGraphicsAPI);
+std::unique_ptr<Mesh> CreateQuadMesh(Atrium::GraphicsAPI& aGraphicsAPI);
