@@ -77,12 +77,12 @@ void ExampleGame::HandleExit()
 void ExampleGame::OnStart_SetupWindows()
 {
 	ZoneScoped;
-	Atrium::Core::WindowManager::CreationParameters windowParams;
+	Atrium::WindowManager::CreationParameters windowParams;
 	windowParams.Title = "Window 1";
 	windowParams.Size = { 640, 480 };
 	auto window1 = myEngineInstance.GetWindowManager().NewWindow(windowParams);
 	myWindow1 = myEngineInstance.GetGraphicsAPI().GetResourceManager().CreateRenderTextureForWindow(*window1);
-	window1->Closed.Connect(nullptr, [&](Atrium::Core::Window&) {
+	window1->Closed.Connect(nullptr, [&](Atrium::Window&) {
 		myWindow1.reset();
 		});
 
