@@ -1,9 +1,9 @@
 // Filter "Chart/Playback"
 #include "ChartHumanController.hpp"
 
-void ChartHumanController::HandleInput(const Atrium::Core::InputEvent& anInputEvent)
+void ChartHumanController::HandleInput(const Atrium::InputEvent& anInputEvent)
 {
-	using namespace Atrium::Core;
+	using namespace Atrium;
 
 	switch (anInputEvent.Source)
 	{
@@ -30,7 +30,7 @@ void ChartHumanController::HandleInput(const Atrium::Core::InputEvent& anInputEv
 			break;
 
 		case InputSourceId::Keyboard::Spacebar:
-			if (anInputEvent.Type == Atrium::Core::InputEventType::Pressed)
+			if (anInputEvent.Type == InputEventType::Pressed)
 				Strum();
 			break;
 	}

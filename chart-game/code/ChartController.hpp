@@ -38,7 +38,7 @@ public:
 
 	virtual void HandleChartChange(const ChartData& aData);
 	virtual void HandlePlayheadStep(const std::chrono::microseconds& aPrevious, const std::chrono::microseconds& aNew);
-	virtual void HandleInput([[maybe_unused]] const Atrium::Core::InputEvent& anInputEvent) { }
+	virtual void HandleInput([[maybe_unused]] const Atrium::InputEvent& anInputEvent) { }
 
 	#if IS_IMGUI_ENABLED
 	virtual void ImGui(ChartTestWindow& aTestWindow);

@@ -89,7 +89,7 @@ void ExampleGame::OnStart_SetupWindows()
 	myEngineInstance.InitializeImGui(*window1, myWindow1);
 }
 
-void ExampleGame::HandleInput(const Atrium::Core::InputEvent& anInputEvent)
+void ExampleGame::HandleInput(const Atrium::InputEvent& anInputEvent)
 {
 	for (const auto& controller : myChartPlayer.GetControllers())
 		controller->HandleInput(anInputEvent);

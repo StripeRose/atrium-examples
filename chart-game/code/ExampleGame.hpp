@@ -25,7 +25,7 @@ private:
 
 	void OnStart_SetupWindows();
 
-	void HandleInput(const Atrium::Core::InputEvent& anInputEvent);
+	void HandleInput(const Atrium::InputEvent& anInputEvent);
 
 	Atrium::EngineInstance& myEngineInstance;
 
