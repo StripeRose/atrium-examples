@@ -54,6 +54,7 @@ ChartTestWindow::ChartTestWindow(ChartPlayer& aPlayer, ChartRenderer& aRenderer)
 	: myLookAhead(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(5)))
 	, myChartPlayer(aPlayer)
 	, myChartRenderer(aRenderer)
+	, mySongsDirectoryBuffer(0)
 {
 }
 
