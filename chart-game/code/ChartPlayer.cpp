@@ -22,6 +22,20 @@ ChartPlayer::State ChartPlayer::GetState() const
 	return State::Stopped;
 }
 
+void ChartPlayer::LoadChart(const std::filesystem::path& aSong)
+{
+	myActiveChart = ActiveChart();
+	ActiveChart& activeChart = myActiveChart.value();
+
+	activeChart.Info.Load(aSong);
+	activeChart.Data.LoadMidi(aSong.parent_path() / "notes.mid");
+
+	// Todo: Set up all audio clips.
+
+	for (const std::unique_ptr<ChartController>& controller : myControllers)
+		controller->HandleChartChange(myActiveChart.value().Data);
+}
+
 void ChartPlayer::Pause()
 {
 	Atrium::Debug::Log("Chart pause.");
@@ -30,7 +44,7 @@ void ChartPlayer::Pause()
 
 void ChartPlayer::Play()
 {
-	if (myChartData == nullptr)
+	if (!myActiveChart)
 		return;
 
 	Atrium::Debug::Log("Chart play.");
@@ -82,13 +96,6 @@ void ChartPlayer::Seek(std::chrono::microseconds aPlayTime)
 		controller->HandlePlayheadStep(myPlayhead, aPlayTime);
 
 	myPlayhead = aPlayTime;
-}
-
-void ChartPlayer::SetChartData(const ChartData& aData)
-{
-	myChartData = &aData;
-	for (const std::unique_ptr<ChartController>& controller : myControllers)
-		controller->HandleChartChange(aData);
 }
 
 void ChartPlayer::Stop()

@@ -70,7 +70,6 @@ private:
 
 	std::string myCurrentSong;
 
-	ChartData myChartData;
 	ChartPlayer& myChartPlayer;
 	ChartRenderer& myChartRenderer;
 	std::map<ChartTrackType, TrackSettings> myTrackSettings;

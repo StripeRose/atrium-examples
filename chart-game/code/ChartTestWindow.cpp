@@ -454,21 +454,30 @@ void ChartTestWindow::ImGui_Tracks()
 {
 	ZoneScoped;
 
-	ImGui::Text("Section: %s", myChartData.GetSectionNameAt(myChartPlayer.GetPlayhead()).c_str());
+	if (myChartPlayer.GetChartData())
+		ImGui::Text("Section: %s", myChartPlayer.GetChartData()->GetSectionNameAt(myChartPlayer.GetPlayhead()).c_str());
+	else
+		ImGui::TextDisabled("Section: -");
 
 	ImGui_Track_TimeSignatures();
 
-	for (const auto& track : myChartData.GetTracks())
-		ImGui_Track(*track.second);
+	if (myChartPlayer.GetChartData())
+	{
+		for (const auto& track : myChartPlayer.GetChartData()->GetTracks())
+			ImGui_Track(*track.second);
+	}
 }
 
 void ChartTestWindow::ImGui_Player_PlayControls()
 {
 	ZoneScoped;
-	ImGui::Text("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetPlayhead()));
+	if (myChartPlayer.GetChartData())
+		ImGui::Text("BPM: %f", myChartPlayer.GetChartData()->GetBPMAt(myChartPlayer.GetPlayhead()));
+	else
+		ImGui::TextDisabled("BPM: -");
 
 	const ChartPlayer::State playerState = myChartPlayer.GetState();
-	ImGui::BeginDisabled(playerState == ChartPlayer::State::Seeking);
+	ImGui::BeginDisabled(!myChartPlayer.GetChartData() || playerState == ChartPlayer::State::Seeking);
 
 	if (playerState != ChartPlayer::State::Playing)
 	{
@@ -488,10 +497,8 @@ void ChartTestWindow::ImGui_Player_PlayControls()
 		myChartPlayer.Stop();
 	ImGui::EndDisabled();
 
-	ImGui::EndDisabled();
-
-	const auto playhead = myChartPlayer.GetPlayhead();
-	const auto duration = myChartData.GetDuration();
+	const auto playhead = myChartPlayer.GetChartData() ? myChartPlayer.GetPlayhead() : std::chrono::microseconds(0);
+	const auto duration = myChartPlayer.GetChartData() ? myChartPlayer.GetChartData()->GetDuration() : std::chrono::microseconds(0);
 	const auto playheadSeconds = std::chrono::round<std::chrono::seconds>(playhead);
 	const auto durationSeconds = std::chrono::round<std::chrono::seconds>(duration);
 	int playheadMicroseconds = static_cast<int>(playhead.count());
@@ -502,6 +509,7 @@ void ChartTestWindow::ImGui_Player_PlayControls()
 		myChartPlayer.Seek(std::chrono::microseconds(playheadMicroseconds));
 	}
 
+	ImGui::EndDisabled();
 }
 
 void ChartTestWindow::ImGui_Player_LookAheadControl()
@@ -602,19 +610,22 @@ void ChartTestWindow::ImGui_DrawChart_HitWindow(const ImGui_ChartDrawParameters&
 
 void ChartTestWindow::ImGui_DrawChart_Beats(const ImGui_ChartDrawParameters& someParameters)
 {
+	if (!myChartPlayer.GetChartData())
+		return;
+
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 	std::uint32_t beat = 0;
 
-	const std::vector<ChartData::TempoSection>& tempoSections = myChartData.GetTempoSections();
+	const std::vector<ChartData::TempoSection>& tempoSections = myChartPlayer.GetChartData()->GetTempoSections();
 	for (auto section = tempoSections.cbegin(); section != tempoSections.cend(); section++)
 	{
 		const auto next = section + 1;
 		const std::chrono::microseconds start = section->TimeStart;
-		const std::chrono::microseconds end = (next != tempoSections.cend()) ? next->TimeStart : myChartData.GetDuration();
+		const std::chrono::microseconds end = (next != tempoSections.cend()) ? next->TimeStart : myChartPlayer.GetChartData()->GetDuration();
 
 		std::chrono::microseconds beatTime = start;
-		const ChartData::TimeSignature& timeSignature = myChartData.GetTimeSignatureAt(start);
+		const ChartData::TimeSignature& timeSignature = myChartPlayer.GetChartData()->GetTimeSignatureAt(start);
 		while (beatTime < end)
 		{
 			const float trackPosition = someParameters.TimeToPoint(beatTime);
@@ -641,6 +652,9 @@ void ChartTestWindow::ImGui_DrawChart_Beats(const ImGui_ChartDrawParameters& som
 
 void ChartTestWindow::ImGui_Track_TimeSignatures()
 {
+	if (!myChartPlayer.GetChartData())
+		return;
+
 	ImGui::Indent();
 
 	ImGui_DrawChart(
@@ -648,12 +662,12 @@ void ChartTestWindow::ImGui_Track_TimeSignatures()
 		[&](const ImGui_ChartDrawParameters& someParameters) {
 			ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-			const std::vector<std::pair<std::chrono::microseconds, ChartData::TimeSignature>>& timeSignatures = myChartData.GetTimeSignatures();
+			const std::vector<std::pair<std::chrono::microseconds, ChartData::TimeSignature>>& timeSignatures = myChartPlayer.GetChartData()->GetTimeSignatures();
 			for (auto it = timeSignatures.cbegin(); it != timeSignatures.cend(); it++)
 			{
 				const auto next = it + 1;
 				const std::chrono::microseconds start = it->first;
-				const std::chrono::microseconds end = (next != timeSignatures.cend()) ? next->first : myChartData.GetDuration();
+				const std::chrono::microseconds end = (next != timeSignatures.cend()) ? next->first : myChartPlayer.GetChartData()->GetDuration();
 				const float startPosition = someParameters.TimeToPoint(start);
 				const float endPosition = someParameters.TimeToPoint(end);
 
@@ -815,9 +829,8 @@ void ChartTestWindow::RefreshSongList()
 void ChartTestWindow::LoadSong(const std::filesystem::path& aSong)
 {
 	ZoneScoped;
-
+	
 	const std::unique_ptr<ChartInfo>& chart = myChartInfos.at(aSong);
 	myCurrentSong = chart->GetSongInfo().Title;
-	myChartData.LoadMidi(aSong.parent_path() / "notes.mid");
-	myChartPlayer.SetChartData(myChartData);
+	myChartPlayer.LoadChart(aSong);
 }
